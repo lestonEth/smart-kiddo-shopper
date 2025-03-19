@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidShop AI | Smart Shopping Assistant for Families</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#5D5CDE',
+                            dark: '#4A49B8',
+                            light: '#7E7DE6'
+                        },
+                        secondary: {
+                            DEFAULT: '#FF6B6B',
+                            dark: '#E05555',
+                            light: '#FF8A8A'
+                        },
+                        accent: {
+                            DEFAULT: '#4ECDC4',
+                            dark: '#3EACA3',
+                            light: '#6BDBD3'
+                        },
+                        background: {
+                            light: '#FFFFFF',
+                            dark: '#181818'
+                        },
+                        surface: {
+                            light: '#F8F9FA',
+                            dark: '#242424'
+                        },
+                        text: {
+                            light: '#333333',
+                            dark: '#E0E0E0'
+                        }
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 2s infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'scale': 'scale 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'slide-down': 'slideDown 0.5s ease-out',
+                        'slide-in-right': 'slideInRight 0.5s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'wave': 'wave 2s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        scale: {
+                            '0%': { transform: 'scale(0.9)' },
+                            '100%': { transform: 'scale(1)' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        slideDown: {
+                            '0%': { transform: 'translateY(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        wave: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '10%': { transform: 'rotate(14deg)' },
+                            '20%': { transform: 'rotate(-8deg)' },
+                            '30%': { transform: 'rotate(14deg)' },
+                            '40%': { transform: 'rotate(-4deg)' },
+                            '50%': { transform: 'rotate(10deg)' },
+                            '60%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(0deg)' },
+                        },
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(93, 92, 222, 0.5);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(93, 92, 222, 0.8);
+        }
+        
+        /* Chat AI animation */
+        .chat-bubble {
+            position: relative;
+            overflow: hidden;
+        }
+        .chat-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, #5D5CDE, #4ECDC4, #FF6B6B);
+            animation: chatTyping 2s infinite ease-in-out;
+        }
+        @keyframes chatTyping {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Chat wave animation */
+        .wave-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+        }
+        .wave-bar {
+            background-color: #5D5CDE;
+            height: 15px;
+            width: 4px;
+            margin: 0 3px;
+            border-radius: 3px;
+            transform-origin: bottom;
+            animation: wave-animation 1s infinite ease-in-out;
+        }
+        .wave-bar:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+        .wave-bar:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+        .wave-bar:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+        @keyframes wave-animation {
+            0%, 100% {
+                transform: scaleY(0.5);
+            }
+            50% {
+                transform: scaleY(1);
+            }
+        }
+        
+        /* Credit card styling */
+        .credit-card {
+            background: linear-gradient(135deg, #5D5CDE 0%, #4A49B8 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .credit-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        /* Product card hover effect */
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Floating circles decoration */
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(93, 92, 222, 0.2) 0%, rgba(78, 205, 196, 0.2) 100%);
+            z-index: -1;
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        /* Modal animations */
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: all 0.3s ease;
+        }
+        
+        /* Custom toggle switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #5D5CDE;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #5D5CDE;
+        }
+        
+        /* Robot animation */
+        @keyframes robotFloat {
+            0%, 100% { transform: translateY(0) rotate(1deg); }
+            50% { transform: translateY(-15px) rotate(-1deg); }
+        }
+        .robot-animation {
+            animation: robotFloat 4s ease-in-out infinite;
+        }
+        
+        /* Avatar badges */
+        .avatar-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            transform: translate(25%, 25%);
+        }
+        
+        /* Custom chart styles */
+        .spending-bar {
+            height: 12px;
+            border-radius: 6px;
+            transition: width 1s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark min-h-screen transition-colors duration-300">
+    <!-- Navigation -->
+    <nav id="nav" class="fixed w-full top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md shadow-sm">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <a href="#" class="flex items-center space-x-2" onclick="showPage('homepage')">
+                    <div class="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white">
+                        <i class="fas fa-robot text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">KidShop AI</span>
+                </a>
+                
+                <!-- Navigation Links - Desktop -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#" class="nav-link relative font-medium group" onclick="showPage('homepage')">
+                        Home
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#" class="nav-link relative font-medium group" onclick="showPage('features')">
+                        Features
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#" class="nav-link relative font-medium group" onclick="showPage('pricing')">
+                        Pricing
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#" class="nav-link relative font-medium group" onclick="showPage('contact')">
+                        Contact
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    <!-- Theme toggle -->
+                    <button id="darkModeToggle" class="p-2 rounded-full hover:bg-surface-light dark:hover:bg-surface-dark transition-colors">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block text-yellow-300"></i>
+                    </button>
+                    
+                    <!-- User menu -->
+                    <div class="relative" id="userMenuContainer">
+                        <button id="userMenuButton" class="auth-button flex items-center space-x-1 py-2 px-4 rounded-full bg-primary hover:bg-primary-dark text-white transition-colors">
+                            <span class="hidden sm:inline">Sign In</span>
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark rounded-lg shadow-lg py-2 z-10 hidden animate-slide-up">
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="showPage('login')">Login</a>
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="showPage('register')">Register</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile menu button -->
+                    <button id="mobileMenuButton" class="md:hidden p-2 rounded-lg hover:bg-surface-light dark:hover:bg-surface-dark transition-colors">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Navigation Menu -->
+            <div id="mobileMenu" class="md:hidden pt-4 pb-2 hidden animate-slide-down">
+                <a href="#" class="block py-2 px-4 hover:bg-surface-light dark:hover:bg-surface-dark rounded-lg transition-colors" onclick="showPage('homepage')">Home</a>
+                <a href="#" class="block py-2 px-4 hover:bg-surface-light dark:hover:bg-surface-dark rounded-lg transition-colors" onclick="showPage('features')">Features</a>
+                <a href="#" class="block py-2 px-4 hover:bg-surface-light dark:hover:bg-surface-dark rounded-lg transition-colors" onclick="showPage('pricing')">Pricing</a>
+                <a href="#" class="block py-2 px-4 hover:bg-surface-light dark:hover:bg-surface-dark rounded-lg transition-colors" onclick="showPage('contact')">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="pt-16">
+        <!-- Pages Container -->
+        <div id="pages-container">
+            <!-- HOMEPAGE -->
+            <section id="homepage" class="min-h-screen page">
+                <!-- Hero Section -->
+                <div class="relative overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+                    <!-- Decorative circles -->
+                    <div class="floating-circle w-64 h-64 top-20 left-10 opacity-50"></div>
+                    <div class="floating-circle w-96 h-96 bottom-10 right-10 opacity-30" style="animation-delay: 2s;"></div>
+                    
+                    <div class="container mx-auto px-4 py-20 flex flex-col lg:flex-row items-center">
+                        <!-- Hero Text Content -->
+                        <div class="lg:w-1/2 mb-10 lg:mb-0 z-10 animate-slide-up">
+                            <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                                <span class="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Smart Shopping</span> 
+                                <br>for the Whole Family
+                            </h1>
+                            <p class="text-lg mb-8 text-gray-700 dark:text-gray-300">
+                                Empower your kids with financial responsibility. Our AI shopping assistant helps children learn about money while keeping parents in control.
+                            </p>
+                            <div class="flex flex-wrap gap-4">
+                                <button class="px-8 py-3 bg-primary hover:bg-primary-dark text-white rounded-full font-medium transition-all transform hover:scale-105 hover:shadow-lg flex items-center">
+                                    <span>Get Started</span>
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                                <button class="px-8 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-white dark:text-white rounded-full font-medium transition-all">
+                                    Watch Demo
+                                </button>
+                            </div>
+                            
+                            <!-- Stats -->
+                            <div class="mt-12 grid grid-cols-3 gap-4">
+                                <div class="text-center">
+                                    <p class="text-3xl font-bold text-primary">5K+</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Families</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-3xl font-bold text-primary">10K+</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Children</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-3xl font-bold text-primary">98%</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Satisfaction</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hero Image/Animation -->
+                        <div class="lg:w-1/2 relative z-10">
+                            <!-- Robot Assistant Animation -->
+                            <div class="robot-container mx-auto w-80 h-80 relative robot-animation">
+                                <div class="robot-head bg-white dark:bg-gray-700 rounded-3xl shadow-lg p-6 text-center">
+                                    <div class="robot-face mb-4">
+                                        <div class="eyes flex justify-center space-x-6 mb-4">
+                                            <div class="eye w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                                <div class="w-2 h-2 bg-white rounded-full"></div>
+                                            </div>
+                                            <div class="eye w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                                <div class="w-2 h-2 bg-white rounded-full"></div>
+                                            </div>
+                                        </div>
+                                        <div class="mouth w-12 h-3 bg-primary rounded-full mx-auto"></div>
+                                    </div>
+                                    <div class="robot-speech-bubble bg-blue-100 dark:bg-gray-600 p-3 rounded-xl relative animate-pulse-slow">
+                                        <p class="text-sm">Hi there! I'm your AI shopping assistant. I'll help you find great products within your budget!</p>
+                                        <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-100 dark:bg-gray-600 rotate-45"></div>
+                                    </div>
+                                </div>
+                                <div class="chat-preview mt-6 bg-white dark:bg-gray-700 rounded-xl p-4 shadow-lg animate-float" style="animation-delay: 1.5s;">
+                                    <div class="flex items-center mb-3">
+                                        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white mr-3">
+                                            <i class="fas fa-child"></i>
+                                        </div>
+                                        <p class="text-sm">I'm looking for a new bike!</p>
+                                    </div>
+                                    <div class="chat-bubble bg-primary/10 p-3 rounded-lg">
+                                        <p class="text-sm">I found some great bikes for you...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Features Preview -->
+                <div class="py-16 bg-white dark:bg-background-dark">
+                    <div class="container mx-auto px-4">
+                        <div class="text-center mb-16 animate-fade-in">
+                            <h2 class="text-3xl font-bold mb-4">How It Works</h2>
+                            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Our platform makes shopping safe, educational, and fun for the whole family.</p>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <!-- Feature 1 -->
+                            <div class="feature-card bg-surface-light dark:bg-surface-dark p-6 rounded-xl shadow-sm transition-all hover:shadow-md animate-slide-up" style="animation-delay: 0.1s;">
+                                <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center text-primary mb-4">
+                                    <i class="fas fa-user-shield text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-3">Parental Control</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Set spending limits, approve purchases, and maintain oversight of your child's shopping activities.</p>
+                            </div>
+                            
+                            <!-- Feature 2 -->
+                            <div class="feature-card bg-surface-light dark:bg-surface-dark p-6 rounded-xl shadow-sm transition-all hover:shadow-md animate-slide-up" style="animation-delay: 0.2s;">
+                                <div class="w-14 h-14 rounded-full bg-secondary/20 flex items-center justify-center text-secondary mb-4">
+                                    <i class="fas fa-robot text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-3">AI Assistant</h3>
+                                <p class="text-gray-600 dark:text-gray-400">A friendly AI helps children find products, compare options, and make smart purchase decisions.</p>
+                            </div>
+                            
+                            <!-- Feature 3 -->
+                            <div class="feature-card bg-surface-light dark:bg-surface-dark p-6 rounded-xl shadow-sm transition-all hover:shadow-md animate-slide-up" style="animation-delay: 0.3s;">
+                                <div class="w-14 h-14 rounded-full bg-accent/20 flex items-center justify-center text-accent mb-4">
+                                    <i class="fas fa-piggy-bank text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-3">Budget Management</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Children learn financial responsibility by managing their own balance and saving for purchases.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonials -->
+                <div class="py-16 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+                    <div class="container mx-auto px-4">
+                        <div class="text-center mb-12 animate-fade-in">
+                            <h2 class="text-3xl font-bold mb-4">What Families Say</h2>
+                            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Join thousands of happy families using our platform</p>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Testimonial 1 -->
+                            <div class="bg-white dark:bg-surface-dark p-6 rounded-xl shadow-sm animate-slide-up" style="animation-delay: 0.1s;">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary mr-3">
+                                        <span class="font-bold">JM</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Jennifer M.</h4>
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 dark:text-gray-400">"My children have learned so much about budgeting and money management. The AI assistant makes it fun for them while giving me peace of mind."</p>
+                            </div>
+                            
+                            <!-- Testimonial 2 -->
+                            <div class="bg-white dark:bg-surface-dark p-6 rounded-xl shadow-sm animate-slide-up" style="animation-delay: 0.2s;">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary mr-3">
+                                        <span class="font-bold">RT</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Robert T.</h4>
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 dark:text-gray-400">"The spending limits and approval system gives me control while still allowing my kids the freedom to browse and shop. It's the perfect balance."</p>
+                            </div>
+                            
+                            <!-- Testimonial 3 -->
+                            <div class="bg-white dark:bg-surface-dark p-6 rounded-xl shadow-sm animate-slide-up" style="animation-delay: 0.3s;">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary mr-3">
+                                        <span class="font-bold">AS</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Aisha S.</h4>
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 dark:text-gray-400">"My 10-year-old loves chatting with the AI to find products. It's teaching her to compare prices and make thoughtful decisions. Highly recommend!"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- CTA Section -->
+                <div class="py-16 bg-primary text-white">
+                    <div class="container mx-auto px-4 text-center">
+                        <h2 class="text-3xl font-bold mb-6 animate-fade-in">Ready to Transform Family Shopping?</h2>
+                        <p class="text-xl mb-8 max-w-2xl mx-auto animate-fade-in" style="animation-delay: 0.2s;">Join thousands of families teaching financial responsibility while keeping shopping safe and fun.</p>
+                        <button class="px-8 py-3 bg-white text-primary hover:bg-gray-100 rounded-full font-medium transition-all transform hover:scale-105 animate-slide-up" style="animation-delay: 0.3s;">
+                            Get Started Free
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- LOGIN PAGE -->
+            <section id="login" class="min-h-screen page hidden">
+                <div class="container mx-auto px-4 py-12 flex justify-center items-center">
+                    <div class="bg-white dark:bg-surface-dark rounded-2xl shadow-lg w-full max-w-md p-8 animate-scale">
+                        <div class="text-center mb-6">
+                            <div class="h-16 w-16 rounded-full bg-primary mx-auto mb-4 flex items-center justify-center text-white">
+                                <i class="fas fa-user text-2xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold">Welcome Back</h2>
+                            <p class="text-gray-600 dark:text-gray-400">Sign in to manage your family's accounts</p>
+                        </div>
+                        
+                        <form class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="email">Email</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="email" id="email" class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all text-base" placeholder="you@example.com">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <label class="block text-sm font-medium" for="password">Password</label>
+                                    <a href="#" class="text-sm text-primary hover:underline">Forgot Password?</a>
+                                </div>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" id="password" class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all text-base" placeholder="••••••••">
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="checkbox" id="remember" class="h-4 w-4 text-primary focus:ring-primary">
+                                <label for="remember" class="ml-2 text-sm">Remember me</label>
+                            </div>
+                            
+                            <button type="button" onclick="simulateLogin()" class="w-full py-3 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors font-medium flex items-center justify-center">
+                                <i class="fas fa-sign-in-alt mr-2"></i>
+                                <span>Sign In</span>
+                            </button>
+                        </form>
+                        
+                        <div class="mt-6 text-center">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Don't have an account? <a href="#" class="text-primary hover:underline" onclick="showPage('register')">Create Account</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- REGISTER PAGE -->
+            <section id="register" class="min-h-screen page hidden">
+                <div class="container mx-auto px-4 py-12 flex justify-center items-center">
+                    <div class="bg-white dark:bg-surface-dark rounded-2xl shadow-lg w-full max-w-md p-8 animate-scale">
+                        <div class="text-center mb-6">
+                            <div class="h-16 w-16 rounded-full bg-primary mx-auto mb-4 flex items-center justify-center text-white">
+                                <i class="fas fa-user-plus text-2xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold">Create Account</h2>
+                            <p class="text-gray-600 dark:text-gray-400">Join our family of smart shoppers</p>
+                        </div>
+                        
+                        <form class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1" for="firstName">First Name</label>
+                                    <input type="text" id="firstName" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all text-base" placeholder="John">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1" for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all text-base" placeholder="Doe">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="regEmail">Email</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="email" id="regEmail" class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all text-base" placeholder="you@example.com">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="regPassword">Password</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" id="regPassword" class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all text-base" placeholder="••••••••">
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters with numbers and symbols</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-1" for="confirmPassword">Confirm Password</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" id="confirmPassword" class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all text-base" placeholder="••••••••">
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="checkbox" id="terms" class="h-4 w-4 text-primary focus:ring-primary">
+                                <label for="terms" class="ml-2 text-sm">I agree to the <a href="#" class="text-primary hover:underline">Terms of Service</a> and <a href="#" class="text-primary hover:underline">Privacy Policy</a></label>
+                            </div>
+                            
+                            <button type="button" onclick="simulateRegister()" class="w-full py-3 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors font-medium flex items-center justify-center">
+                                <i class="fas fa-user-plus mr-2"></i>
+                                <span>Create Account</span>
+                            </button>
+                        </form>
+                        
+                        <div class="mt-6 text-center">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Already have an account? <a href="#" class="text-primary hover:underline" onclick="showPage('login')">Sign In</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- PARENT DASHBOARD -->
+            <section id="parent-dashboard" class="min-h-screen page hidden">
+                <div class="container mx-auto px-4 py-8">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-bold">Parent Dashboard</h1>
+                            <p class="text-gray-600 dark:text-gray-400">Manage your family's accounts and settings</p>
+                        </div>
+                        <div class="mt-4 md:mt-0">
+                            <button class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors mr-2">
+                                <i class="fas fa-plus mr-1"></i> Add Child
+                            </button>
+                            <button class="px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-white dark:text-white rounded-lg transition-colors">
+                                <i class="fas fa-cog mr-1"></i> Settings
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Total Balance Card -->
+                        <div class="bg-white dark:bg-surface-dark p-6 rounded-xl shadow-sm animate-slide-up">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-medium text-gray-500 dark:text-gray-400">Total Family Balance</h3>
+                                <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-green-500">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <p class="text-3xl font-bold">$245.50</p>
+                            <p class="text-sm text-green-500 mt-2">
+                                <i class="fas fa-arrow-up mr-1"></i> 
+                                <span>12% from last month</span>
+                            </p>
+                        </div>
+                        
+                        <!-- Children Accounts -->
+                        <div class="bg-white dark:bg-surface-dark p-6 rounded-xl shadow-sm animate-slide-up" style="animation-delay: 0.1s;">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-medium text-gray-500 dark:text-gray-400">Children Accounts</h3>
+                                <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-500">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <p class="text-3xl font-bold">3</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                <span>Active accounts</span>
+                            </p>
+                        </div>
+                        
+                        <!-- Pending Approvals -->
+                        <div class="bg-white dark:bg-surface-dark p-6 rounded-xl shadow-sm animate-slide-up" style="animation-delay: 0.2s;">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-medium text-gray-500 dark:text-gray-400">Pending Approvals</h3>
+                                <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center text-yellow-500">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                            <p class="text-3xl font-bold">2</p>
+                            <button class="text-sm text-primary mt-2 flex items-center">
+                                <span>Review now</span>
+                                <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Children Accounts -->
+                    <div class="mb-10">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold">Children Accounts</h2>
+                            <div class="relative">
+                                <input type="text" placeholder="Search accounts..." class="pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg text-base">
+                                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm overflow-hidden">
+                            <!-- Account 1 -->
+                            <div class="p-6 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                    <div class="flex items-center mb-4 md:mb-0">
+                                        <div class="relative">
+                                            <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                                                <span class="font-bold text-xl">E</span>
+                                            </div>
+                                            <div class="avatar-badge w-5 h-5 bg-green-500 border-2 border-white dark:border-surface-dark rounded-full flex items-center justify-center text-white text-xs">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <h3 class="font-semibold text-lg">Emma</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Age: 12</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center mb-4 md:mb-0">
+                                        <div class="mr-6">
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Balance</p>
+                                            <p class="font-bold">$89.25</p>
+                                        </div>
+                                        <div class="mr-6">
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Limit</p>
+                                            <p class="font-bold">$25/week</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Purchases</p>
+                                            <p class="font-bold">12 items</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <button class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors text-sm">
+                                            Manage
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Recent Activity -->
+                                <div class="mt-6">
+                                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Recent Activity</h4>
+                                    <div class="flex items-center text-sm">
+                                        <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                                        <span class="text-gray-600 dark:text-gray-300">Added $20 balance</span>
+                                        <span class="mx-2 text-gray-400">•</span>
+                                        <span class="text-gray-500">2 days ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Account 2 -->
+                            <div class="p-6 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                    <div class="flex items-center mb-4 md:mb-0">
+                                        <div class="relative">
+                                            <div class="w-14 h-14 rounded-full bg-secondary/20 flex items-center justify-center text-secondary">
+                                                <span class="font-bold text-xl">J</span>
+                                            </div>
+                                            <div class="avatar-badge w-5 h-5 bg-yellow-500 border-2 border-white dark:border-surface-dark rounded-full flex items-center justify-center text-white text-xs">
+                                                <i class="fas fa-bell"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <h3 class="font-semibold text-lg">Jacob</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Age: 9</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center mb-4 md:mb-0">
+                                        <div class="mr-6">
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Balance</p>
+                                            <p class="font-bold">$45.00</p>
+                                        </div>
+                                        <div class="mr-6">
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Limit</p>
+                                            <p class="font-bold">$15/week</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Purchases</p>
+                                            <p class="font-bold">5 items</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <button class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors text-sm">
+                                            Manage
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Pending Approval -->
+                                <div class="mt-6">
+                                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Approval Required</h4>
+                                    <div class="flex items-center text-sm">
+                                        <span class="w-2 h-2 rounded-full bg-yellow-500 mr-2"></span>
+                                        <span class="text-gray-600 dark:text-gray-300">Lego Star Wars set - $24.99</span>
+                                        <button class="ml-3 text-primary text-xs border border-primary px-2 py-0.5 rounded hover:bg-primary hover:text-white transition-colors">
+                                            Review
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Account 3 -->
+                            <div class="p-6 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                    <div class="flex items-center mb-4 md:mb-0">
+                                        <div class="relative">
+                                            <div class="w-14 h-14 rounded-full bg-accent/20 flex items-center justify-center text-accent">
+                                                <span class="font-bold text-xl">S</span>
+                                            </div>
+                                            <div class="avatar-badge w-5 h-5 bg-green-500 border-2 border-white dark:border-surface-dark rounded-full flex items-center justify-center text-white text-xs">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <h3 class="font-semibold text-lg">Sophia</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Age: 14</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center mb-4 md:mb-0">
+                                        <div class="mr-6">
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Balance</p>
+                                            <p class="font-bold">$111.25</p>
+                                        </div>
+                                        <div class="mr-6">
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Limit</p>
+                                            <p class="font-bold">$35/week</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Purchases</p>
+                                            <p class="font-bold">18 items</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <button class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors text-sm">
+                                            Manage
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Recent Activity -->
+                                <div class="mt-6">
+                                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Recent Activity</h4>
+                                    <div class="flex items-center text-sm">
+                                        <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                                        <span class="text-gray-600 dark:text-gray-300">Purchased Wireless Headphones - $32.99</span>
+                                        <span class="mx-2 text-gray-400">•</span>
+                                        <span class="text-gray-500">Yesterday</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Spending Analysis -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <!-- Spending by Category -->
+                        <div class="bg-white dark:bg-surface-dark p-6 rounded-xl shadow-sm">
+                            <h3 class="font-bold mb-4">Spending by Category</h3>
+                            <div class="space-y-4">
+                                <!-- Category 1 -->
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Electronics</span>
+                                        <span>$78.50</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                                        <div class="spending-bar bg-primary" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Category 2 -->
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Toys & Games</span>
+                                        <span>$45.25</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                                        <div class="spending-bar bg-secondary" style="width: 35%"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Category 3 -->
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Books</span>
+                                        <span>$32.80</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                                        <div class="spending-bar bg-accent" style="width: 25%"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Category 4 -->
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Clothing</span>
+                                        <span>$25.45</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                                        <div class="spending-bar bg-yellow-500" style="width: 20%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Transactions -->
+                        <div class="bg-white dark:bg-surface-dark p-6 rounded-xl shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold">Recent Transactions</h3>
+                                <button class="text-sm text-primary">View All</button>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <!-- Transaction 1 -->
+                                <div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-500 mr-3">
+                                            <i class="fas fa-headphones"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Wireless Headphones</p>
+                                            <p class="text-xs text-gray-500">Sophia • Yesterday</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-medium">-$32.99</span>
+                                </div>
+                                
+                                <!-- Transaction 2 -->
+                                <div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-green-500 mr-3">
+                                            <i class="fas fa-wallet"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Allowance Added</p>
+                                            <p class="text-xs text-gray-500">Emma • 2 days ago</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-medium text-green-500">+$20.00</span>
+                                </div>
+                                
+                                <!-- Transaction 3 -->
+                                <div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-500 mr-3">
+                                            <i class="fas fa-book"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Science Book</p>
+                                            <p class="text-xs text-gray-500">Jacob • 3 days ago</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-medium">-$12.50</span>
+                                </div>
+                                
+                                <!-- Transaction 4 -->
+                                <div class="flex items-center justify-between py-2">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center text-yellow-500 mr-3">
+                                            <i class="fas fa-tshirt"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">T-Shirt</p>
+                                            <p class="text-xs text-gray-500">Emma • 5 days ago</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-medium">-$15.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- CHILD DASHBOARD / AI CHAT -->
+            <section id="child-dashboard" class="min-h-screen page hidden">
+                <div class="h-screen flex flex-col">
+                    <!-- Child Dashboard Header -->
+                    <div class="bg-white dark:bg-surface-dark shadow-sm p-4">
+                        <div class="container mx-auto">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary mr-3">
+                                        <span class="font-bold text-xl">E</span>
+                                    </div>
+                                    <div>
+                                        <h2 class="font-bold text-xl">Hi, Emma!</h2>
+                                        <div class="flex items-center">
+                                            <div class="mr-4">
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">Balance</span>
+                                                <p class="font-bold">$89.25</p>
+                                            </div>
+                                            <div>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">Weekly Limit</span>
+                                                <p class="font-bold">$25.00</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-full text-sm">
+                                        My Purchases
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Chat Area -->
+                    <div class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden">
+                        <!-- Chat Messages -->
+                        <div id="chatMessages" class="flex-1 overflow-y-auto p-4">
+                            <!-- Welcome Message -->
+                            <div class="flex mb-6 items-end">
+                                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white mr-2 flex-shrink-0">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="bg-white dark:bg-surface-dark rounded-lg rounded-bl-none p-4 max-w-md shadow-sm">
+                                    <p class="font-medium">Hi Emma! I'm ShopBot 🤖</p>
+                                    <p class="text-gray-600 dark:text-gray-400 mt-1">I can help you find products on Amazon! What would you like to shop for today?</p>
+                                </div>
+                            </div>
+                            
+                            <!-- User Message -->
+                            <div class="flex mb-6 justify-end">
+                                <div class="bg-primary text-white rounded-lg rounded-br-none p-4 max-w-md shadow-sm">
+                                    <p>I'd like to find a new backpack for school</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-white ml-2 flex-shrink-0">
+                                    <span class="font-bold">E</span>
+                                </div>
+                            </div>
+                            
+                            <!-- AI Message with typing indicator -->
+                            <div class="flex mb-6 items-end typing-message">
+                                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white mr-2 flex-shrink-0">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="bg-white dark:bg-surface-dark rounded-lg rounded-bl-none p-4 max-w-md shadow-sm chat-bubble">
+                                    <p class="font-medium">Looking for backpacks on Amazon...</p>
+                                    <div class="wave-container">
+                                        <div class="wave-bar"></div>
+                                        <div class="wave-bar"></div>
+                                        <div class="wave-bar"></div>
+                                        <div class="wave-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- AI Message with products -->
+                            <div class="flex mb-6 items-end product-results hidden">
+                                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white mr-2 flex-shrink-0">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="bg-white dark:bg-surface-dark rounded-lg rounded-bl-none p-4 max-w-3xl shadow-sm">
+                                    <p class="font-medium">I found some great backpacks for school! Here are the best options:</p>
+                                    
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                                        <!-- Product 1 -->
+                                        <div class="product-card bg-gray-50 dark:bg-gray-800 rounded-lg p-3 cursor-pointer">
+                                            <div class="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg mb-3 flex items-center justify-center">
+                                                <i class="fas fa-backpack text-4xl text-gray-400"></i>
+                                            </div>
+                                            <h4 class="font-medium">ClassicPro Backpack</h4>
+                                            <div class="flex text-yellow-400 text-xs my-1">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                                <span class="text-gray-500 ml-1">(245)</span>
+                                            </div>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Durable with laptop compartment, water bottle pockets, and padded straps</p>
+                                            <div class="flex justify-between items-center">
+                                                <span class="font-bold">$32.99</span>
+                                                <button class="buy-btn px-3 py-1 bg-primary text-white rounded-full text-sm">Buy</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Product 2 -->
+                                        <div class="product-card bg-gray-50 dark:bg-gray-800 rounded-lg p-3 cursor-pointer">
+                                            <div class="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg mb-3 flex items-center justify-center">
+                                                <i class="fas fa-backpack text-4xl text-gray-400"></i>
+                                            </div>
+                                            <h4 class="font-medium">TechTravel Backpack</h4>
+                                            <div class="flex text-yellow-400 text-xs my-1">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <span class="text-gray-500 ml-1">(189)</span>
+                                            </div>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">USB charging port, anti-theft design, laptop compartment and 15 pockets</p>
+                                            <div class="flex justify-between items-center">
+                                                <span class="font-bold">$45.50</span>
+                                                <button class="buy-btn px-3 py-1 bg-primary text-white rounded-full text-sm">Buy</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">Would you like to see more options or get more details about any of these?</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Input -->
+                        <div class="bg-white dark:bg-surface-dark p-4 shadow-md">
+                            <div class="container mx-auto">
+                                <div class="flex items-center">
+                                    <button class="mr-2 p-2 text-gray-500 hover:text-primary">
+                                        <i class="fas fa-paperclip"></i>
+                                    </button>
+                                    <div class="flex-1 relative">
+                                        <input type="text" id="chatInput" placeholder="Ask me about products..." class="w-full py-3 px-4 bg-gray-100 dark:bg-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-primary text-base">
+                                    </div>
+                                    <button id="sendMessage" class="ml-2 p-3 bg-primary hover:bg-primary-dark text-white rounded-full transition-colors">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                                <div class="flex justify-center mt-2 text-xs text-gray-500">
+                                    <p>ShopBot will search Amazon products based on your requests</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SETTINGS PAGE -->
+            <section id="settings" class="min-h-screen page hidden">
+                <div class="container mx-auto px-4 py-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <h1 class="text-2xl md:text-3xl font-bold">Account Settings</h1>
+                        <button class="px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-white dark:text-white rounded-lg transition-colors">
+                            <i class="fas fa-save mr-1"></i> Save Changes
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Settings Sidebar -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm overflow-hidden">
+                                <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+                                    <div class="flex items-center">
+                                        <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary mr-4">
+                                            <span class="font-bold text-2xl">JD</span>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-bold text-lg">John Doe</h3>
+                                            <p class="text-gray-500 dark:text-gray-400">Parent Account</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4">
+                                    <ul class="space-y-1">
+                                        <li>
+                                            <a href="#" class="block px-4 py-2 rounded-lg bg-primary/10 text-primary font-medium">
+                                                <i class="fas fa-user-circle w-6 text-center mr-2"></i>
+                                                <span>Profile</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="block px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                                <i class="fas fa-lock w-6 text-center mr-2"></i>
+                                                <span>Security</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="block px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                                <i class="fas fa-bell w-6 text-center mr-2"></i>
+                                                <span>Notifications</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="block px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                                <i class="fas fa-credit-card w-6 text-center mr-2"></i>
+                                                <span>Payment Methods</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="block px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                                <i class="fas fa-users w-6 text-center mr-2"></i>
+                                                <span>Children Accounts</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="block px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                                <i class="fas fa-shield-alt w-6 text-center mr-2"></i>
+                                                <span>Parental Controls</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Settings Content -->
+                        <div class="lg:col-span-2">
+                            <!-- Profile Settings -->
+                            <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm p-6 mb-8">
+                                <h2 class="text-xl font-bold mb-6">Profile Information</h2>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1" for="firstName">First Name</label>
+                                        <input type="text" id="firstName" value="John" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1" for="lastName">Last Name</label>
+                                        <input type="text" id="lastName" value="Doe" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1" for="email">Email</label>
+                                        <input type="email" id="email" value="john.doe@example.com" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1" for="phone">Phone</label>
+                                        <input type="tel" id="phone" value="(555) 123-4567" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Methods -->
+                            <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm p-6 mb-8">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h2 class="text-xl font-bold">Payment Methods</h2>
+                                    <button class="text-primary hover:underline text-sm flex items-center">
+                                        <i class="fas fa-plus mr-1"></i>
+                                        Add New
+                                    </button>
+                                </div>
+                                
+                                <!-- Credit Card -->
+                                <div class="mb-6">
+                                    <div class="credit-card mb-4">
+                                        <div class="flex justify-between mb-4">
+                                            <div>
+                                                <i class="fab fa-cc-visa text-3xl"></i>
+                                                <p class="text-sm mt-1 opacity-80">Visa ending in 4567</p>
+                                            </div>
+                                            <div>
+                                                <p class="opacity-80">Valid until</p>
+                                                <p class="text-lg">09/25</p>
+                                            </div>
+                                        </div>
+                                        <p class="font-medium mt-2">John Doe</p>
+                                    </div>
+                                    
+                                    <div class="flex space-x-3">
+                                        <button class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary flex items-center">
+                                            <i class="fas fa-pencil-alt mr-1"></i>
+                                            Edit
+                                        </button>
+                                        <button class="text-sm text-gray-600 dark:text-gray-400 hover:text-red-500 flex items-center">
+                                            <i class="fas fa-trash-alt mr-1"></i>
+                                            Remove
+                                        </button>
+                                        <div class="flex items-center ml-auto">
+                                            <span class="text-sm mr-2">Default</span>
+                                            <div class="relative inline-block w-10 mr-2 align-middle">
+                                                <input type="checkbox" id="defaultCard" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer right-0" checked />
+                                                <label for="defaultCard" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Parental Controls -->
+                            <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm p-6">
+                                <h2 class="text-xl font-bold mb-6">Parental Controls</h2>
+                                
+                                <div class="space-y-6">
+                                    <!-- Purchase Approvals -->
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="font-medium">Purchase Approval</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Require approval for all purchases</p>
+                                        </div>
+                                        <div class="relative inline-block w-10 align-middle">
+                                            <input type="checkbox" id="purchaseApproval" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer right-0" checked />
+                                            <label for="purchaseApproval" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Spending Limits -->
+                                    <div>
+                                        <h3 class="font-medium mb-3">Spending Limits</h3>
+                                        
+                                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-4">
+                                            <!-- Emma's limit -->
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary mr-3">
+                                                        <span class="font-bold">E</span>
+                                                    </div>
+                                                    <span>Emma</span>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <span>$</span>
+                                                    <input type="number" value="25" class="w-16 px-2 py-1 bg-white dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600">
+                                                    <select class="px-2 py-1 bg-white dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600">
+                                                        <option>Weekly</option>
+                                                        <option>Monthly</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Jacob's limit -->
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center text-secondary mr-3">
+                                                        <span class="font-bold">J</span>
+                                                    </div>
+                                                    <span>Jacob</span>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <span>$</span>
+                                                    <input type="number" value="15" class="w-16 px-2 py-1 bg-white dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600">
+                                                    <select class="px-2 py-1 bg-white dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600">
+                                                        <option>Weekly</option>
+                                                        <option>Monthly</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Sophia's limit -->
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
+                                                        <span class="font-bold">S</span>
+                                                    </div>
+                                                    <span>Sophia</span>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <span>$</span>
+                                                    <input type="number" value="35" class="w-16 px-2 py-1 bg-white dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600">
+                                                    <select class="px-2 py-1 bg-white dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600">
+                                                        <option>Weekly</option>
+                                                        <option>Monthly</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Content Filtering -->
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="font-medium">Content Filtering</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Filter products for age-appropriate content</p>
+                                        </div>
+                                        <div class="relative inline-block w-10 align-middle">
+                                            <input type="checkbox" id="contentFiltering" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer right-0" checked />
+                                            <label for="contentFiltering" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Notifications -->
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="font-medium">Purchase Notifications</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Receive notifications for all purchases</p>
+                                        </div>
+                                        <div class="relative inline-block w-10 align-middle">
+                                            <input type="checkbox" id="purchaseNotifications" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer right-0" checked />
+                                            <label for="purchaseNotifications" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- PURCHASE CONFIRMATION MODAL -->
+            <div id="purchaseModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+                <div class="modal-overlay absolute inset-0 bg-black opacity-50"></div>
+                <div class="modal-content relative bg-white dark:bg-surface-dark rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
+                    <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 mx-auto bg-primary/20 rounded-full flex items-center justify-center text-primary mb-4">
+                            <i class="fas fa-shopping-cart text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold">Confirm Purchase</h2>
+                    </div>
+                    
+                    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400 mr-3">
+                                    <i class="fas fa-backpack text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium" id="productName">ClassicPro Backpack</h3>
+                                    <div class="flex text-yellow-400 text-xs">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="font-bold" id="productPrice">$32.99</p>
+                        </div>
+                        
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>Current Balance</span>
+                                <span class="font-medium">$89.25</span>
+                            </div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>Purchase Amount</span>
+                                <span class="font-medium text-red-500">-$32.99</span>
+                            </div>
+                            <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                <span>New Balance</span>
+                                <span>$56.26</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 text-center">
+                        This purchase is within your spending limit and will not require parental approval.
+                    </p>
+                    
+                    <div class="flex space-x-4">
+                        <button id="cancelPurchase" class="flex-1 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            Cancel
+                        </button>
+                        <button id="confirmPurchase" class="flex-1 py-3 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center justify-center">
+                            <i class="fas fa-check mr-2"></i>
+                            <span>Confirm</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        
+        // Check for user preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        // Listen for changes in user preference
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+        
+        // Toggle dark mode
+        darkModeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+        
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // User menu toggle
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        userMenuButton.addEventListener('click', () => {
+            userDropdown.classList.toggle('hidden');
+        });
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (event) => {
+            const userMenuContainer = document.getElementById('userMenuContainer');
+            if (!userMenuContainer.contains(event.target)) {
+                userDropdown.classList.add('hidden');
+            }
+            
+            if (!mobileMenuButton.contains(event.target) && !mobileMenu.contains(event.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+        
+        // Page navigation
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            const selectedPage = document.getElementById(pageId);
+            if (selectedPage) {
+                selectedPage.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            }
+            
+            // Close mobile menu when navigating
+            mobileMenu.classList.add('hidden');
+            
+            // Update active navigation link
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                link.classList.remove('text-primary', 'dark:text-white');
+            });
+
+            const selectedLink = document.getElementById(pageId + '-link');
+
+            if (selectedLink) {
+                selectedLink.classList.add('text-primary', 'dark:text-white');
+            }
+
+            // Clear chat messages when navigating away from chat
+            if (pageId !== 'child-dashboard') {
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = '';
+            }
+
+        }
+
+        // Purchase confirmation modal
+
+        const purchaseModal = document.getElementById('purchaseModal');
+        const confirmPurchase = document.getElementById('confirmPurchase');
+        const cancelPurchase = document.getElementById('cancelPurchase');
+        const closeModal = document.getElementById('closeModal');
+
+        confirmPurchase.addEventListener('click', () => {
+            purchaseModal.classList.add('hidden');
+        });
+
+        cancelPurchase.addEventListener('click', () => {
+            purchaseModal.classList.add('hidden');
+        });
+
+        closeModal.addEventListener('click', () => {
+            purchaseModal.classList.add('hidden');
+        });
+
+        // Open purchase modal
+        function openPurchaseModal() {
+            purchaseModal.classList.remove('hidden');
+        }
+
+        // Send message in chat
+        const chatInput = document.getElementById('chatInput');
+        const sendMessage = document.getElementById('sendMessage');
+
+        sendMessage.addEventListener('click', () => {
+            const message = chatInput.value;
+            if (message.trim() === '') return;
+
+            const chatMessages = document.getElementById('chatMessages');
+            const userMessage = `
+                <div class="flex mb-6 justify-end">
+                    <div class="bg-primary text-white rounded-lg rounded-br-none p-4 max-w-md shadow-sm">
+                        <p>${message}</p>
+                    </div>
+                    
+                    <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-white ml-2 flex-shrink-0">
+                        <span class="font-bold">E</span>
+                    </div>
+                </div>
+            `;
+            chatMessages.innerHTML += userMessage;
+
+            chatInput.value = '';
+        });
+
+        // AI Typing indicator
+        const typingMessage = document.querySelector('.typing-message');
+        const productResults = document.querySelector('.product-results');
+
+        setTimeout(() => {
+            typingMessage.classList.add('hidden');
+            productResults.classList.remove('hidden');
+        }, 3000);
+
+        // Buy button
+        const buyButtons = document.querySelectorAll('.buy-btn');
+
+        buyButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                openPurchaseModal();
+            });
+        });
+
+        // Initialize page
+        showPage('dashboard');
+
+    </script>
+</body>
+</html>
+
+
+

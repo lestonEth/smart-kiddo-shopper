@@ -51,7 +51,7 @@ const Chat = () => {
     {
       id: '1',
       sender: 'assistant',
-      text: "Hi there! I'm your KiddoSmart shopping assistant. What would you like to shop for today?",
+      text: "Hi there! I'm your Shopmeai shopping assistant. What would you like to shop for today?",
       timestamp: new Date(),
     }
   ]);
@@ -224,7 +224,7 @@ const Chat = () => {
           <div className="max-w-5xl mx-auto">
             <header className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-3xl font-bold mb-1">KiddoSmart Assistant</h1>
+                <h1 className="text-3xl font-bold mb-1">Shopmeai Assistant</h1>
                 <p className="text-gray-600">Ask me about products and I'll help you shop!</p>
               </div>
               
@@ -269,7 +269,7 @@ const Chat = () => {
                                 K
                               </div>
                             </div>
-                            <div className="font-medium">KiddoSmart</div>
+                            <div className="font-medium">Shopmeai</div>
                           </div>
                         )}
                         
@@ -291,7 +291,7 @@ const Chat = () => {
                               K
                             </div>
                           </div>
-                          <div className="font-medium">KiddoSmart</div>
+                          <div className="font-medium">Shopmeai</div>
                         </div>
                         <div className="flex space-x-2">
                           <div className="h-2 w-2 bg-gray-300 rounded-full animate-bounce"></div>

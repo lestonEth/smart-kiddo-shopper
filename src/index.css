@@ -1,9 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -162,4 +163,93 @@
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 300ms, transform 300ms;
+}
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom Styles */
+.glass-card {
+  @apply bg-white/20 backdrop-blur-md border border-white/30 shadow-xl;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-600;
+}
+
+/* Hide scrollbar but allow scrolling */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Animations */
+.reveal-item {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.reveal-item.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.parent-bubble {
+  animation: bubble-float 8s ease-in-out infinite;
+}
+
+.child-bubble {
+  animation: bubble-float 6s ease-in-out infinite 1s;
+}
+
+@keyframes bubble-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-15px) rotate(2deg); }
+  66% { transform: translateY(10px) rotate(-2deg); }
+}
+
+/* Button hover effects */
+.cta-button {
+  @apply relative overflow-hidden transition-all duration-300 ease-in-out;
+}
+
+.cta-button::after {
+  @apply content-[''] absolute top-0 left-0 w-full h-full bg-white/20 scale-x-0 transition-transform duration-300 ease-in-out origin-right;
+}
+
+.cta-button:hover::after {
+  @apply scale-x-100 origin-left;
+}
+
+/* Gradient border */
+.gradient-border {
+  background: linear-gradient(to right, rgb(59, 130, 246), rgb(79, 70, 229));
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Loader for images */
+.image-loader {
+  @apply absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-200 animate-pulse;
 }

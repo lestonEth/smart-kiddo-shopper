@@ -11,9 +11,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -22,6 +24,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -39,4 +42,41 @@
 
 .read-the-docs {
   color: #888;
+}
+
+
+@keyframes scale-up {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s forwards;
+}
+
+.animate-fade-in-delay-1 {
+  animation: fade-in 0.5s forwards 0.1s;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fade-in 0.5s forwards 0.2s;
+}
+
+.animate-fade-in-delay-3 {
+  animation: fade-in 0.5s forwards 0.3s;
+}
+
+.animate-fade-in-delay-4 {
+  animation: fade-in 0.5s forwards 0.4s;
+}
+
+.scale-up {
+  animation: scale-up 0.5s forwards;
 }
