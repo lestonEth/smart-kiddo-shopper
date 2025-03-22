@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ShoppingCart, User, Settings, Home, MessageCircle, LogOut } from "lucide-react";
@@ -82,7 +83,7 @@ const Navbar: React.FC = () => {
                     <div className="hidden md:flex md:items-center md:space-x-4">
                         {user ? (
                             <>
-                                <span className="text-gray-700 font-medium">{user.username}</span>
+                                <span className="text-gray-700 font-medium">{user.name}</span>
                                 <button
                                     onClick={logout}
                                     className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-red-600 hover:bg-red-100"

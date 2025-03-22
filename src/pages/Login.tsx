@@ -37,18 +37,22 @@ const Login = () => {
     
         try {
             const response = await login({ email: formData.email, password: formData.password });
-            console.log(response)
-            if (response.success) {
-                toast({ title: "Success!", description: "Your action was successful." });
+            console.log(response);
+            if (response && response.success) {
+                toast({ title: "Success!", description: "Login successful." });
                 window.location.reload();
             } else {
-                setError(response.message || 'Login failed');
-                toast({ title: "Error", description: response?.message || 'Login failed'});
+                setError('Login failed. Please check your credentials.');
+                toast({ title: "Error", description: 'Login failed. Please check your credentials.' });
             }
-        } catch (err) {
-            setError('An error occurred. Please try again.');
+        } catch (err: any) {
+            const errorMessage = err && typeof err === 'object' && 'message' in err 
+                ? err.message 
+                : 'An error occurred. Please try again.';
+            
+            setError(errorMessage);
             console.error(err);
-            toast({ title: "Error", description: 'An error occurred. Please try again.'});
+            toast({ title: "Error", description: errorMessage });
         } finally {
             setLoading(false);
         }

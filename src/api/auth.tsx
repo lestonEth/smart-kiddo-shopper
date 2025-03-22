@@ -1,10 +1,9 @@
 import axios from 'axios';
-import { parseJSON } from 'date-fns';
 
 const API_URL = 'http://localhost:5000/api/auth'; // Replace with your backend URL
 
 // Handle API responses with error codes
-const handleApiError = (error) => {
+const handleApiError = (error: any) => {
     if (error.response) {
         // Server responded with a status code outside 2xx
         const { status, data } = error.response;
@@ -34,7 +33,7 @@ const handleApiError = (error) => {
 };
 
 // Register User
-export const register = async (userData) => {
+export const register = async (userData: any) => {
     try {
         const response = await axios.post(`${API_URL}/register`, userData);
         return response.data;
@@ -44,16 +43,16 @@ export const register = async (userData) => {
 };
 
 // Login User
-export const login = async (credentials) => {
+export const login = async (credentials: { email: string; password: string }) => {
     try {
         const response = await axios.post(`${API_URL}/login`, credentials);
         const { token, user } = response.data;
-        console.log(user)
+        console.log(user);
         localStorage.setItem('authToken', token);
-        localStorage.setItem('user', JSON.stringify(user))
-        return { token, user, success: true }
+        localStorage.setItem('user', JSON.stringify(user));
+        return { token, user, success: true };
     } catch (error) {
-        handleApiError(error);
+        throw handleApiError(error);
     }
 };
 
