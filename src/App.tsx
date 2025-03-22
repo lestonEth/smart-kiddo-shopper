@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +12,7 @@ import RestrictedRoute from "@/RestrictedRoute";
 const queryClient = new QueryClient();
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import ChildDashboard from "./pages/ChildDashboard";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import Settings from "./pages/Settings";
@@ -32,6 +34,7 @@ const App = () => (
                             {/* Protected Routes */}
                             <Route element={<PrivateRoute />}>
                                 <Route path="/dashboard" element={<Dashboard />} />
+                                <Route path="/child-dashboard" element={<ChildDashboard />} />
                                 <Route path="/settings" element={<Settings />} />
                             </Route>
                             <Route path="/chat" element={<Chat />} />
