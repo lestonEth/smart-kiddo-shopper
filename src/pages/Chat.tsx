@@ -1,11 +1,12 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import PageTransition from '@/components/PageTransition';
 import AnimatedAssistant from '@/components/AnimatedAssistant';
 import ProductCard from '@/components/ProductCard';
-import { Send, Mic, ShoppingCart, X, CheckCircle, AlertCircle, AlertTriangle } from 'lucide-react';
+import VoiceCircle from '@/components/VoiceCircle';
+import { Send, Mic, MicOff, ShoppingCart, X, CheckCircle, AlertCircle, AlertTriangle, Volume, VolumeX } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 // Sample product data
 const sampleProducts = [
@@ -29,7 +30,7 @@ const sampleProducts = [
     id: "3",
     name: "Wireless Bluetooth Headphones for Kids",
     price: 24.99,
-    image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGhlYWRwaG9uZXN8ZW58MHx8MHx8fDA%3D",
+    image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGhlYWRwaG9uZXN8ZW58MHx8MHx8MA%3D%3D",
     rating: 4.2,
     description: "Volume limiting headphones with 85dB protection, Bluetooth connectivity, and comfortable design for children."
   },
@@ -60,11 +61,59 @@ const Chat = () => {
   const [balance, setBalance] = useState(50);
   const [cartItems, setCartItems] = useState<string[]>([]);
   
+  // Voice-related states
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
   
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  
+  useEffect(() => {
+    // Initialize speech recognition
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      
+      recognitionRef.current.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join('');
+        
+        setInput(transcript);
+      };
+      
+      recognitionRef.current.onend = () => {
+        if (isListening) {
+          recognitionRef.current?.start();
+        }
+      };
+    } else {
+      toast({
+        title: "Speech Recognition Not Supported",
+        description: "Your browser doesn't support speech recognition. Please try using Chrome.",
+        variant: "destructive",
+      });
+    }
+    
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      if (speechSynthesis) {
+        speechSynthesis.cancel();
+      }
+    };
+  }, []);
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -84,6 +133,12 @@ const Chat = () => {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
+    setIsProcessing(true);
+    
+    // Stop listening if active
+    if (isListening) {
+      toggleListening();
+    }
     
     // Simulate AI response
     setTimeout(() => {
@@ -134,7 +189,82 @@ const Chat = () => {
       
       setMessages(prev => [...prev, aiResponse]);
       setIsTyping(false);
+      setIsProcessing(false);
+      
+      // Speak the response if not muted
+      if (!isMuted && aiResponse.text) {
+        speakText(aiResponse.text);
+      }
+      
     }, 1500);
+  };
+  
+  const speakText = (text: string) => {
+    if (!speechSynthesis) return;
+    
+    // Cancel any ongoing speech
+    speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    
+    // Get available voices and set a natural-sounding one
+    const voices = speechSynthesis.getVoices();
+    const preferredVoice = voices.find(voice => 
+      voice.name.includes('Google') && voice.name.includes('Female') ||
+      voice.name.includes('Samantha') ||
+      voice.name.includes('Female')
+    );
+    
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+    
+    speechSynthesisRef.current = utterance;
+    
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+    };
+    
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      speechSynthesisRef.current = null;
+    };
+    
+    speechSynthesis.speak(utterance);
+  };
+  
+  const toggleListening = () => {
+    if (!recognitionRef.current) return;
+    
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      setInput('');
+      recognitionRef.current.start();
+      setIsListening(true);
+      
+      toast({
+        title: "Listening...",
+        description: "Speak now. I'm listening to your request.",
+      });
+    }
+  };
+  
+  const toggleMute = () => {
+    if (isSpeaking && speechSynthesisRef.current) {
+      speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+    setIsMuted(!isMuted);
+    
+    toast({
+      title: isMuted ? "Voice Enabled" : "Voice Muted",
+      description: isMuted ? "I'll speak responses again." : "I won't speak responses aloud.",
+    });
   };
   
   const handleAddToCart = (productId: string) => {
@@ -244,7 +374,17 @@ const Chat = () => {
               </motion.div>
             </header>
             
-            <div className="flex flex-col h-[calc(100vh-200px)] md:h-[600px]">
+            {/* Voice Circle UI */}
+            <div className="flex justify-center mb-6">
+              <VoiceCircle 
+                isListening={isListening}
+                isProcessing={isProcessing}
+                isSpeaking={isSpeaking}
+                size="large"
+              />
+            </div>
+            
+            <div className="flex flex-col h-[calc(100vh-280px)] md:h-[500px]">
               <div className="flex-1 glass-card p-4 overflow-y-auto">
                 <div className="space-y-6">
                   {messages.map((message) => (
@@ -266,7 +406,7 @@ const Chat = () => {
                           <div className="flex items-center space-x-2 mb-2">
                             <div className="w-8 h-8 rounded-full bg-brand-blue/10 flex items-center justify-center">
                               <div className="w-6 h-6 rounded-full bg-brand-blue flex items-center justify-center text-white font-bold text-xs">
-                                K
+                                S
                               </div>
                             </div>
                             <div className="font-medium">Shopmeai</div>
@@ -288,7 +428,7 @@ const Chat = () => {
                         <div className="flex items-center space-x-2 mb-2">
                           <div className="w-8 h-8 rounded-full bg-brand-blue/10 flex items-center justify-center">
                             <div className="w-6 h-6 rounded-full bg-brand-blue flex items-center justify-center text-white font-bold text-xs">
-                              K
+                              S
                             </div>
                           </div>
                           <div className="font-medium">Shopmeai</div>
@@ -313,17 +453,27 @@ const Chat = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder="Ask about products or type what you're looking for..."
-                    className="w-full bg-white border border-gray-200 rounded-full pl-5 pr-14 py-3 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
+                    placeholder={isListening ? "Listening..." : "Ask about products or type what you're looking for..."}
+                    className={`w-full bg-white border border-gray-200 rounded-full pl-5 pr-24 py-3 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent ${isListening ? 'bg-brand-blue/5' : ''}`}
                   />
                   
                   <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-1">
                     <motion.button 
-                      className="h-9 w-9 flex items-center justify-center rounded-full bg-gray-100 text-gray-500"
+                      className={`h-9 w-9 flex items-center justify-center rounded-full ${isMuted ? 'bg-red-100 text-red-500' : 'bg-gray-100 text-gray-500'}`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      onClick={toggleMute}
                     >
-                      <Mic className="h-5 w-5" />
+                      {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume className="h-5 w-5" />}
+                    </motion.button>
+                    
+                    <motion.button 
+                      className={`h-9 w-9 flex items-center justify-center rounded-full ${isListening ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-500'}`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={toggleListening}
+                    >
+                      {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
                     </motion.button>
                     
                     <motion.button 
@@ -338,7 +488,7 @@ const Chat = () => {
                 </div>
                 
                 <div className="text-xs text-gray-500 mt-2 pl-2">
-                  Try asking: "Show me some LEGO sets" or "I'm looking for headphones"
+                  {isListening ? "Speak now..." : "Try asking: \"Show me some LEGO sets\" or \"I'm looking for headphones\""}
                 </div>
               </div>
             </div>
