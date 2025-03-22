@@ -32,9 +32,9 @@ const App = () => (
                             {/* Protected Routes */}
                             <Route element={<PrivateRoute />}>
                                 <Route path="/dashboard" element={<Dashboard />} />
-                                <Route path="/chat" element={<Chat />} />
                                 <Route path="/settings" element={<Settings />} />
                             </Route>
+                            <Route path="/chat" element={<Chat />} />
 
                             {/* Catch-all 404 Page */}
                             <Route path="*" element={<NotFound />} />

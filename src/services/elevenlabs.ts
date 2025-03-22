@@ -2,7 +2,7 @@
 import { toast } from '@/components/ui/use-toast';
 
 // This key should be stored securely - in production you'd use Supabase/environment variables
-let ELEVENLABS_API_KEY = '';
+let ELEVENLABS_API_KEY = 'sk_51e9550ef3cae675c74c42d04cb1a491ac7770a175b9b872';
 
 const API_URL = 'https://api.elevenlabs.io/v1';
 

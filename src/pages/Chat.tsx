@@ -50,8 +50,7 @@ const Chat = () => {
     if (!hasApiKey()) {
       toast({
         title: "Voice Features Limited",
-        description: "Set your ElevenLabs API key in settings for enhanced voice capabilities.",
-        variant: "warning",
+        description: "Set your ElevenLabs API key in settings for enhanced voice capabilities."
       });
     }
     
@@ -171,8 +170,7 @@ const Chat = () => {
       if (!product) {
         toast({
           title: "Product Not Found",
-          description: "Unable to find product details.",
-          variant: "destructive",
+          description: "Unable to find product details."
         });
         return;
       }
