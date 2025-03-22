@@ -1,51 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import PageTransition from '@/components/PageTransition';
-import AnimatedAssistant from '@/components/AnimatedAssistant';
-import ProductCard from '@/components/ProductCard';
 import VoiceCircle from '@/components/VoiceCircle';
 import { Send, Mic, MicOff, ShoppingCart, X, CheckCircle, AlertCircle, AlertTriangle, Volume, VolumeX } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import ProductCard from '@/components/ProductCard';
+import AuthContext from '@/context/AuthContext';
 
-// Sample product data
-const sampleProducts = [
-  {
-    id: "1",
-    name: "LEGO Star Wars AT-ST Raider Building Kit",
-    price: 49.99,
-    image: "https://images.unsplash.com/photo-1518946222227-364f22132616?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bGVnb3xlbnwwfHwwfHx8MA%3D%3D",
-    rating: 4.8,
-    description: "Build an AT-ST from the hit Star Wars TV series The Mandalorian with this building kit for kids and adults."
-  },
-  {
-    id: "2",
-    name: "Kids Smart Watch with GPS Tracker",
-    price: 35.99,
-    image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c21hcnQlMjB3YXRjaHxlbnwwfHwwfHx8MA%3D%3D",
-    rating: 4.5,
-    description: "GPS tracking, SOS call, two-way calling, and waterproof features in a kid-friendly design."
-  },
-  {
-    id: "3",
-    name: "Wireless Bluetooth Headphones for Kids",
-    price: 24.99,
-    image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGhlYWRwaG9uZXN8ZW58MHx8MHx8MA%3D%3D",
-    rating: 4.2,
-    description: "Volume limiting headphones with 85dB protection, Bluetooth connectivity, and comfortable design for children."
-  },
-];
-
-// Message types
-interface Message {
-  id: string;
-  sender: 'user' | 'assistant';
-  text: string;
-  timestamp: Date;
-  products?: typeof sampleProducts;
-  status?: 'success' | 'warning' | 'error';
-  statusMessage?: string;
-}
+// Import our new services
+import { Message, processUserMessage } from '@/services/chatService';
+import { searchProducts, getProductById } from '@/services/productService';
+import { initSpeechRecognition, startListening, stopListening } from '@/services/speechService';
+import { speakText, setElevenLabsApiKey, hasApiKey } from '@/services/elevenlabs';
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -69,7 +36,7 @@ const Chat = () => {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const { user } = useContext(AuthContext);
   
   useEffect(() => {
     scrollToBottom();
@@ -77,40 +44,20 @@ const Chat = () => {
   
   useEffect(() => {
     // Initialize speech recognition
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
-      recognitionRef.current.interimResults = true;
-      
-      recognitionRef.current.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map(result => result[0])
-          .map(result => result.transcript)
-          .join('');
-        
-        setInput(transcript);
-      };
-      
-      recognitionRef.current.onend = () => {
-        if (isListening) {
-          recognitionRef.current?.start();
-        }
-      };
-    } else {
+    recognitionRef.current = initSpeechRecognition();
+    
+    // Check if ElevenLabs API key is set
+    if (!hasApiKey()) {
       toast({
-        title: "Speech Recognition Not Supported",
-        description: "Your browser doesn't support speech recognition. Please try using Chrome.",
-        variant: "destructive",
+        title: "Voice Features Limited",
+        description: "Set your ElevenLabs API key in settings for enhanced voice capabilities.",
+        variant: "warning",
       });
     }
     
     return () => {
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      if (speechSynthesis) {
-        speechSynthesis.cancel();
+        stopListening(recognitionRef.current);
       }
     };
   }, []);
@@ -119,7 +66,7 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
   
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!input.trim()) return;
     
     // Add user message
@@ -140,111 +87,62 @@ const Chat = () => {
       toggleListening();
     }
     
-    // Simulate AI response
-    setTimeout(() => {
-      let aiResponse: Message;
-      
-      // Sample responses based on input
-      if (input.toLowerCase().includes('lego') || input.toLowerCase().includes('toy')) {
-        aiResponse = {
-          id: (Date.now() + 1).toString(),
-          sender: 'assistant',
-          text: "I found some great LEGO sets that you might like! Here are some options:",
-          timestamp: new Date(),
-          products: [sampleProducts[0]],
-        };
-      } else if (input.toLowerCase().includes('watch') || input.toLowerCase().includes('tracker')) {
-        aiResponse = {
-          id: (Date.now() + 1).toString(),
-          sender: 'assistant',
-          text: "Here's a popular smart watch for kids with GPS tracking:",
-          timestamp: new Date(),
-          products: [sampleProducts[1]],
-        };
-      } else if (input.toLowerCase().includes('headphone') || input.toLowerCase().includes('music')) {
-        aiResponse = {
-          id: (Date.now() + 1).toString(),
-          sender: 'assistant',
-          text: "These headphones are designed specifically for kids with volume limiting technology:",
-          timestamp: new Date(),
-          products: [sampleProducts[2]],
-        };
-      } else if (input.toLowerCase().includes('buy') || input.toLowerCase().includes('purchase')) {
-        aiResponse = {
-          id: (Date.now() + 1).toString(),
-          sender: 'assistant',
-          text: "I'll help you purchase that! Before we proceed, let me check your balance and get parental approval.",
-          timestamp: new Date(),
-          status: 'warning',
-          statusMessage: 'Waiting for parent approval',
-        };
-      } else {
-        aiResponse = {
-          id: (Date.now() + 1).toString(),
-          sender: 'assistant',
-          text: "I can help you find products on Amazon. Try asking me about toys, electronics, books, or clothes for kids!",
-          timestamp: new Date(),
-        };
-      }
+    try {
+      // Process the message and get AI response
+      const aiResponse = await processUserMessage(userMessage.text, balance);
       
       setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-      setIsProcessing(false);
       
       // Speak the response if not muted
       if (!isMuted && aiResponse.text) {
-        speakText(aiResponse.text);
+        setIsSpeaking(true);
+        await speakText(aiResponse.text);
+        setIsSpeaking(false);
       }
       
-    }, 1500);
-  };
-  
-  const speakText = (text: string) => {
-    if (!speechSynthesis) return;
-    
-    // Cancel any ongoing speech
-    speechSynthesis.cancel();
-    
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    
-    // Get available voices and set a natural-sounding one
-    const voices = speechSynthesis.getVoices();
-    const preferredVoice = voices.find(voice => 
-      voice.name.includes('Google') && voice.name.includes('Female') ||
-      voice.name.includes('Samantha') ||
-      voice.name.includes('Female')
-    );
-    
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
+    } catch (error) {
+      console.error('Error handling message:', error);
+      
+      // Add error message
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        sender: 'assistant',
+        text: "I'm sorry, I encountered an error processing your request. Please try again.",
+        timestamp: new Date(),
+        status: 'error',
+        statusMessage: 'Processing error',
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
+      setIsProcessing(false);
     }
-    
-    speechSynthesisRef.current = utterance;
-    
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-    };
-    
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      speechSynthesisRef.current = null;
-    };
-    
-    speechSynthesis.speak(utterance);
   };
   
   const toggleListening = () => {
     if (!recognitionRef.current) return;
     
     if (isListening) {
-      recognitionRef.current.stop();
+      stopListening(recognitionRef.current);
       setIsListening(false);
     } else {
       setInput('');
-      recognitionRef.current.start();
+      
+      startListening(
+        recognitionRef.current,
+        (transcript) => setInput(transcript),
+        () => {
+          // If it stops listening but we still want it to listen
+          if (isListening) {
+            startListening(
+              recognitionRef.current,
+              (transcript) => setInput(transcript)
+            );
+          }
+        }
+      );
+      
       setIsListening(true);
       
       toast({
@@ -255,10 +153,6 @@ const Chat = () => {
   };
   
   const toggleMute = () => {
-    if (isSpeaking && speechSynthesisRef.current) {
-      speechSynthesis.cancel();
-      setIsSpeaking(false);
-    }
     setIsMuted(!isMuted);
     
     toast({
@@ -267,15 +161,24 @@ const Chat = () => {
     });
   };
   
-  const handleAddToCart = (productId: string) => {
+  const handleAddToCart = async (productId: string) => {
     if (!cartItems.includes(productId)) {
       setCartItems([...cartItems, productId]);
       
-      // Find product
-      const product = sampleProducts.find(p => p.id === productId);
+      // Get product details
+      const product = await getProductById(productId);
+      
+      if (!product) {
+        toast({
+          title: "Product Not Found",
+          description: "Unable to find product details.",
+          variant: "destructive",
+        });
+        return;
+      }
       
       // Check balance
-      if (product && product.price > balance) {
+      if (product.price > balance) {
         // Not enough balance
         const warningMessage: Message = {
           id: Date.now().toString(),
@@ -287,7 +190,14 @@ const Chat = () => {
         };
         
         setMessages(prev => [...prev, warningMessage]);
-      } else if (product) {
+        
+        // Speak the message if not muted
+        if (!isMuted) {
+          setIsSpeaking(true);
+          await speakText(warningMessage.text);
+          setIsSpeaking(false);
+        }
+      } else {
         // Successful addition
         const successMessage: Message = {
           id: Date.now().toString(),
@@ -300,8 +210,12 @@ const Chat = () => {
         
         setMessages(prev => [...prev, successMessage]);
         
-        // Update balance (in a real app, this would happen at checkout)
-        // setBalance(prevBalance => prevBalance - product.price);
+        // Speak the message if not muted
+        if (!isMuted) {
+          setIsSpeaking(true);
+          await speakText(successMessage.text);
+          setIsSpeaking(false);
+        }
       }
     }
   };
