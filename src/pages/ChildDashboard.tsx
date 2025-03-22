@@ -1,16 +1,14 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import PageTransition from '@/components/PageTransition';
 import AnimatedAssistant from '@/components/AnimatedAssistant';
-import { Coins, ShoppingCart, Gift, GameController } from 'lucide-react';
+import { Coins, ShoppingCart, Gift, Gamepad } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const ChildDashboard = () => {
   const navigate = useNavigate();
   const [balance] = useState(25.75);
   
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -37,12 +35,10 @@ const ChildDashboard = () => {
   return (
     <PageTransition>
       <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-blue-50 to-purple-50">
-        {/* Background decorative elements */}
         <div className="absolute top-20 left-10 w-24 h-24 bg-yellow-200 rounded-full opacity-40 animate-bounce-soft" />
         <div className="absolute top-40 right-20 w-16 h-16 bg-pink-200 rounded-full opacity-30 animate-float" />
         <div className="absolute bottom-40 left-1/4 w-32 h-32 bg-green-200 rounded-full opacity-30 animate-pulse-soft" />
         
-        {/* Background cartoon images */}
         <motion.img 
           src="https://source.unsplash.com/photo-1535268647677-300dbf3d78d1"
           alt="Cartoon Cat"
@@ -62,7 +58,6 @@ const ChildDashboard = () => {
         />
         
         <div className="container mx-auto px-4 py-8 relative z-10">
-          {/* Greeting section with animated assistant */}
           <div className="flex flex-col md:flex-row items-center justify-between mb-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -96,14 +91,12 @@ const ChildDashboard = () => {
             </div>
           </div>
           
-          {/* Main activity cards */}
           <motion.div 
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
           >
-            {/* Shop Card */}
             <motion.div 
               className="glass-card bg-gradient-to-br from-brand-blue-light to-blue-50 p-6 rounded-3xl shadow-xl"
               variants={itemVariants}
@@ -117,7 +110,6 @@ const ChildDashboard = () => {
               <p className="text-brand-blue-dark/70">Find awesome things to buy!</p>
             </motion.div>
             
-            {/* Savings Card */}
             <motion.div 
               className="glass-card bg-gradient-to-br from-brand-coral-light to-orange-50 p-6 rounded-3xl shadow-xl"
               variants={itemVariants}
@@ -130,7 +122,6 @@ const ChildDashboard = () => {
               <p className="text-brand-coral-dark/70">Watch your money grow!</p>
             </motion.div>
             
-            {/* Rewards Card */}
             <motion.div 
               className="glass-card bg-gradient-to-br from-purple-200 to-purple-50 p-6 rounded-3xl shadow-xl"
               variants={itemVariants}
@@ -143,21 +134,19 @@ const ChildDashboard = () => {
               <p className="text-purple-700/70">Complete tasks for coins!</p>
             </motion.div>
             
-            {/* Games Card */}
             <motion.div 
               className="glass-card bg-gradient-to-br from-green-200 to-green-50 p-6 rounded-3xl shadow-xl"
               variants={itemVariants}
               whileHover={{ y: -5, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
             >
               <div className="bg-white/40 w-16 h-16 rounded-2xl flex items-center justify-center mb-4">
-                <GameController className="w-10 h-10 text-green-500" />
+                <Gamepad className="w-10 h-10 text-green-500" />
               </div>
               <h3 className="text-xl font-bold text-green-700 mb-2">Games</h3>
               <p className="text-green-700/70">Learn while having fun!</p>
             </motion.div>
           </motion.div>
           
-          {/* Learning section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
