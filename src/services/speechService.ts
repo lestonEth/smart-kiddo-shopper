@@ -183,8 +183,8 @@ export const createWakeWordListener = (
 // Add to window to ensure proper type recognition
 declare global {
   interface Window {
-    SpeechRecognition: typeof SpeechRecognition;
-    webkitSpeechRecognition: typeof SpeechRecognition;
+    SpeechRecognition?: typeof window.SpeechRecognition;
+    webkitSpeechRecognition?: typeof window.SpeechRecognition;
   }
   
   interface SpeechRecognition {
