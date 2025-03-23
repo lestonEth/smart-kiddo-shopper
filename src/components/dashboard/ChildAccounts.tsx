@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, UserPlus, ChevronDown, Trash2, Settings, CreditCard, Eye } from 'lucide-react';
 import { Child } from '@/types/types';
-import ConfirmModal from '../ui/ConfirmModal';
+import ConfirmModal from '@/components/ui/confirmModal';
 import ChildDetailView from './ChildDetailView';
 import ChildAccountSettings from './ChildAccountSettings';
 
