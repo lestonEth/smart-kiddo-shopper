@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { DollarSign, Clock, AlertTriangle, Bell } from 'lucide-react';
 
 interface ChildAccount {
-  id: string;
+  _id: string;
   name: string;
   balance: number;
   spendingLimit: number;
@@ -30,14 +30,14 @@ const ParentControls: React.FC<ParentControlsProps> = ({
   const handleBalanceUpdate = () => {
     const amount = parseFloat(balanceInput);
     if (!isNaN(amount)) {
-      onUpdateBalance(child.id, amount);
+      onUpdateBalance(child._id, amount);
     }
   };
 
   const handleLimitUpdate = () => {
     const limit = parseFloat(limitInput);
     if (!isNaN(limit)) {
-      onUpdateLimit(child.id, limit);
+      onUpdateLimit(child._id, limit);
     }
   };
 
@@ -56,7 +56,7 @@ const ParentControls: React.FC<ParentControlsProps> = ({
             className={`relative w-12 h-6 rounded-full transition-all ${
               child.active ? 'bg-green-500' : 'bg-gray-300'
             }`}
-            onClick={() => onToggleActive(child.id, !child.active)}
+            onClick={() => onToggleActive(child._id, !child.active)}
           >
             <motion.div 
               className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full"

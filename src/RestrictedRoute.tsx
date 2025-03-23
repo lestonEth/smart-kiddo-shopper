@@ -3,8 +3,12 @@ import useAuth from "./hooks/useAuth";
 
 const RestrictedRoute: React.FC = () => {
     const { user } = useAuth();
-    console.log("user hook",  user)
-    return user ? <Navigate to="/dashboard" /> : <Outlet />;
+    if (user?.role === "parent") {
+        return <Navigate to="/child-dashboard" />;
+    } else if (user?.role === "child") {
+        return <Navigate to="/dashboard" />;
+    }
+    return <Outlet />;
 };
 
 export default RestrictedRoute;

@@ -1,6 +1,3 @@
-import axios from 'axios';
-
-const API_URL = 'http://192.168.100.10:5000/api/auth';
 
 // Handle API responses with error codes
 const handleApiError = (error: any) => {
@@ -32,37 +29,5 @@ const handleApiError = (error: any) => {
     }
 };
 
-// Register User
-export const register = async (userData: any) => {
-    try {
-        const response = await axios.post(`${API_URL}/register`, userData);
-        return response.data;
-    } catch (error) {
-        handleApiError(error);
-    }
-};
 
-// Login User
-export const login = async (credentials: { email: string; password: string }) => {
-    try {
-        const response = await axios.post(`${API_URL}/login`, credentials);
-        const { token, user } = response.data;
-        console.log(user);
-        localStorage.setItem('authToken', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        return { token, user, success: true };
-    } catch (error) {
-        throw handleApiError(error);
-    }
-};
-
-// Logout User
-export const logout = () => {
-    localStorage.removeItem('token'); // Remove token from local storage
-};
-
-// Check if user is authenticated
-export const isAuthenticated = () => {
-    const token = localStorage.getItem('token');
-    return token !== null;
-};
+export { handleApiError };

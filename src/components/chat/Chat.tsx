@@ -1,10 +1,10 @@
 // src/components/Chat/Chat.jsx
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import PageTransition from '@/components/PageTransition';
-import VoiceCircle from '@/components/VoiceCircle';
+import PageTransition from '@/components/landingApp/PageTransition';
+import VoiceCircle from '@/components/landingApp/VoiceCircle';
 import { toast } from '@/components/ui/use-toast';
 import AuthContext from '@/context/AuthContext';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/landingApp/Navbar';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';

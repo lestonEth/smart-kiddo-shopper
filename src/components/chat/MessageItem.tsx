@@ -1,7 +1,7 @@
 // src/components/Chat/MessageItem.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import ProductCard from '@/components/ProductCard';
+import ProductCard from '@/components/landingApp/ProductCard';
 import TypeWriter from './TypeWriter';
 import { CheckCircle, AlertCircle, AlertTriangle } from 'lucide-react';
 

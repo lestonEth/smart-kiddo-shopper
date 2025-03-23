@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useNavigation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import PageTransition from '@/components/PageTransition';
-import AnimatedAssistant from '@/components/AnimatedAssistant';
+import PageTransition from '@/components/landingApp/PageTransition';
+import AnimatedAssistant from '@/components/landingApp/AnimatedAssistant';
 import { Eye, EyeOff, Lock, Mail, User, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { login } from '@/api/auth';
 import { useToast, toast } from '@/hooks/use-toast';

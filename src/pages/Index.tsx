@@ -5,14 +5,14 @@ import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { ArrowRight, ShoppingCart, Shield, Zap, MessageSquare, Users, CreditCard, User, Home, Bot, MessageCircle } from 'lucide-react';
 
-import Navbar from '@/components/Navbar';
-import AnimatedAssistant from '@/components/AnimatedAssistant';
-import PageTransition from '@/components/PageTransition';
-import Footer from '@/components/Footer';
-import ParentalControls from '@/components/ParentalControls';
-import ProductCarousel from '@/components/ProductCarousel';
-import Features from '@/components/Features';
-import Hero from '@/components/Hero';
+import Navbar from '@/components/landingApp/Navbar';
+import AnimatedAssistant from '@/components/landingApp/AnimatedAssistant';
+import PageTransition from '@/components/landingApp/PageTransition';
+import Footer from '@/components/landingApp/Footer';
+import ParentalControls from '@/components/landingApp/ParentalControls';
+import ProductCarousel from '@/components/landingApp/ProductCarousel';
+import Features from '@/components/landingApp/Features';
+import Hero from '@/components/landingApp/Hero';
 
 
 const Index = () => {
