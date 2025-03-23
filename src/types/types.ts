@@ -8,6 +8,7 @@ export interface Child {
     spendingLimit: number;
     active: boolean;
     password?: string;
+    notifications: Notification[];
 }
 
 export interface Activity {

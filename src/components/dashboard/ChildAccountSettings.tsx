@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, DollarSign, Calendar, Bell, Shield, Clock, ChevronRight, Save, AlertTriangle } from 'lucide-react';
 import { Child } from '@/types/types';
-import ConfirmModal from '../ui/ConfirmModal';
+import ConfirmModal from '@/components/ui/confirmModal';
 
 interface ChildAccountSettingsProps {
     child: Child;
