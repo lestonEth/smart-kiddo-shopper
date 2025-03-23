@@ -5,5 +5,12 @@
         "dest": "/index.html",
         "status": 200
       }
+    ],
+    "headers": [
+      {
+        "source": "**/*.js",
+        "headers": [{ "key": "Content-Type", "value": "text/javascript" }]
+      }
     ]
   }
+  
