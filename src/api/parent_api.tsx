@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { handleApiError } from '.';
 
-const API_URL = 'http://192.168.100.10:5000/api/users';
+const API_URL = 'https://shopmeai-backend.onrender.com/api/users';
 
 
 // get all children of the parent

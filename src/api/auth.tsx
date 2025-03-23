@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.10:5000/api/auth';
+const API_URL = 'https://shopmeai-backend.onrender.com/api/auth';
 
 // Handle API responses with error codes
 const handleApiError = (error: any) => {
