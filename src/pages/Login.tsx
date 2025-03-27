@@ -1,29 +1,30 @@
-
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useNavigation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageTransition from '@/components/landingApp/PageTransition';
 import AnimatedAssistant from '@/components/landingApp/AnimatedAssistant';
-import { Eye, EyeOff, Lock, Mail, User, ArrowLeft, ShieldCheck } from 'lucide-react';
-import { login } from '@/api/auth';
-import { useToast, toast } from '@/hooks/use-toast';
+import { Eye, EyeOff, Lock, Mail, User, ArrowLeft, ShieldCheck, X } from 'lucide-react';
+import { login, register, forgotPassword } from '@/api/auth';
+import { toast } from '@/hooks/use-toast';
 import useAuth from '@/hooks/useAuth';
-import { Navigate } from 'react-router-dom';
 
 const Login = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const {user} = useAuth();
-    const navigation = useNavigate();
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+    const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
+    const { user } = useAuth();
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         username: '',
         email: '',
         password: '',
+        confirmPassword: '',
     });
-
 
     const handleLogin = async () => {
         if (!formData.email || !formData.password) {
@@ -31,21 +32,32 @@ const Login = () => {
             return;
         }
         
-        setIsLogin(true);
         setLoading(true);
         setError('');
     
         try {
             const response = await login({ email: formData.email, password: formData.password });
-            console.log(response);
+            
             if (response && response.success) {
                 toast({ title: "Success!", description: "Login successful." });
-                window.location.reload();
+                
+                // Get user data from local storage after successful login
+                const userData = JSON.parse(localStorage.getItem('user'));
+                
+                // Redirect based on user role
+                if (userData && userData.role === 'parent') {
+                    navigate('/dashboard');
+                } else if (userData && userData.role === 'child') {
+                    navigate('/child-dashboard');
+                } else {
+                    // Fallback in case role isn't recognized
+                    navigate('/restricted');
+                }
             } else {
                 setError('Login failed. Please check your credentials.');
                 toast({ title: "Error", description: 'Login failed. Please check your credentials.' });
             }
-        } catch (err: any) {
+        } catch (err) {
             const errorMessage = err && typeof err === 'object' && 'message' in err 
                 ? err.message 
                 : 'An error occurred. Please try again.';
@@ -55,6 +67,126 @@ const Login = () => {
             toast({ title: "Error", description: errorMessage });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleRegister = async () => {
+        // Validate all required fields
+        if (!formData.username || !formData.email || !formData.password) {
+            toast({ title: "Error", description: "All fields are required." });
+            return;
+        }
+
+        // Validate password
+        if (formData.password.length < 8) {
+            toast({ title: "Error", description: "Password must be at least 8 characters long." });
+            return;
+        }
+
+        // Validate password confirmation
+        if (formData.password !== formData.confirmPassword) {
+            toast({ title: "Error", description: "Passwords don't match." });
+            return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            toast({ title: "Error", description: "Please enter a valid email address." });
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        try {
+            const userData = {
+                username: formData.username,
+                email: formData.email,
+                password: formData.password,
+                role: 'parent',
+            };
+
+            const response = await register(userData);
+            
+            if (response && response.success) {
+                toast({ 
+                    title: "Registration Successful!", 
+                    description: "Your account has been created. You can now log in." 
+                });
+                setIsLogin(true);
+                setFormData({
+                    ...formData,
+                    username: '',
+                    password: '',
+                    confirmPassword: '',
+                });
+            } else {
+                setError('Registration failed. Please try again.');
+                toast({ title: "Error", description: 'Registration failed. Please try again.' });
+            }
+        } catch (err) {
+            const errorMessage = err && typeof err === 'object' && 'message' in err 
+                ? err.message 
+                : 'An error occurred. Please try again.';
+            
+            setError(errorMessage);
+            console.error(err);
+            toast({ title: "Error", description: errorMessage });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleForgotPassword = async (e) => {
+        e.preventDefault();
+        
+        // Validate email
+        if (!forgotPasswordEmail) {
+            toast({ title: "Error", description: "Email is required." });
+            return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(forgotPasswordEmail)) {
+            toast({ title: "Error", description: "Please enter a valid email address." });
+            return;
+        }
+
+        setForgotPasswordLoading(true);
+
+        try {
+            const response = await forgotPassword({ email: forgotPasswordEmail });
+            
+            if (response && response.success) {
+                toast({ 
+                    title: "Password Reset Email Sent", 
+                    description: "Please check your email for password reset instructions." 
+                });
+                setShowForgotPassword(false);
+                setForgotPasswordEmail('');
+            } else {
+                toast({ title: "Error", description: "Failed to send reset email. Please try again." });
+            }
+        } catch (err) {
+            const errorMessage = err && typeof err === 'object' && 'message' in err 
+                ? err.message 
+                : 'An error occurred. Please try again.';
+            
+            console.error(err);
+            toast({ title: "Error", description: errorMessage });
+        } finally {
+            setForgotPasswordLoading(false);
+        }
+    };
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        if (isLogin) {
+            handleLogin();
+        } else {
+            handleRegister();
         }
     };
     
@@ -163,7 +295,8 @@ const Login = () => {
                             </p>
                         </motion.div>
 
-                        <motion.div
+                        <motion.form
+                            onSubmit={handleFormSubmit}
                             className="glass-card p-6"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -183,6 +316,9 @@ const Login = () => {
                                                 type="text"
                                                 className="bg-white pl-10 pr-4 py-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
                                                 placeholder="Enter your name"
+                                                value={formData.username}
+                                                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                                required={!isLogin}
                                             />
                                         </div>
                                     </div>
@@ -202,6 +338,7 @@ const Login = () => {
                                             placeholder="Enter your email"
                                             value={formData.email}
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            required
                                         />
                                     </div>
                                 </div>
@@ -212,9 +349,13 @@ const Login = () => {
                                             Password
                                         </label>
                                         {isLogin && (
-                                            <a href="#" className="text-sm text-brand-blue hover:underline">
+                                            <button
+                                                type="button"
+                                                className="text-sm text-brand-blue hover:underline"
+                                                onClick={() => setShowForgotPassword(true)}
+                                            >
                                                 Forgot password?
-                                            </a>
+                                            </button>
                                         )}
                                     </div>
                                     <div className="relative">
@@ -227,6 +368,7 @@ const Login = () => {
                                             placeholder="Enter your password"
                                             value={formData.password}
                                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                            required
                                         />
                                         <button
                                             type="button"
@@ -241,16 +383,53 @@ const Login = () => {
                                     </div>
                                 </div>
 
+                                {!isLogin && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Confirm Password
+                                        </label>
+                                        <div className="relative">
+                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <Lock className="h-5 w-5 text-gray-400" />
+                                            </div>
+                                            <input
+                                                type={showPassword ? "text" : "password"}
+                                                className="bg-white pl-10 pr-12 py-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
+                                                placeholder="Confirm your password"
+                                                value={formData.confirmPassword}
+                                                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                                                required={!isLogin}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
                                 <motion.button
-                                    type="button"
+                                    type="submit"
                                     className="w-full bg-brand-blue text-white py-3 rounded-lg font-medium shadow-md hover:shadow-lg hover:bg-brand-blue-dark transition-all"
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
-                                    onClick={handleLogin}
+                                    disabled={loading}
                                 >
-                                    {isLogin ? 'Sign In' : 'Create Account'}
+                                    {loading ? (
+                                        <span className="flex items-center justify-center">
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Processing...
+                                        </span>
+                                    ) : (
+                                        isLogin ? 'Sign In' : 'Create Account'
+                                    )}
                                 </motion.button>
                             </div>
+
+                            {error && (
+                                <div className="mt-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+                                    {error}
+                                </div>
+                            )}
 
                             <div className="mt-6 text-center">
                                 <p className="text-gray-600">
@@ -258,8 +437,18 @@ const Login = () => {
                                         ? "Don't have an account? "
                                         : "Already have an account? "}
                                     <button
+                                        type="button"
                                         className="text-brand-blue font-medium hover:underline"
-                                        onClick={() => setIsLogin(!isLogin)}
+                                        onClick={() => {
+                                            setIsLogin(!isLogin);
+                                            setError('');
+                                            setFormData({
+                                                username: '',
+                                                email: '',
+                                                password: '',
+                                                confirmPassword: '',
+                                            });
+                                        }}
                                     >
                                         {isLogin ? 'Sign up' : 'Sign in'}
                                     </button>
@@ -272,6 +461,7 @@ const Login = () => {
                                 </p>
                                 <div className="flex space-x-3">
                                     <motion.button
+                                        type="button"
                                         className="flex-1 flex items-center justify-center space-x-2 bg-white border border-gray-300 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
@@ -286,6 +476,7 @@ const Login = () => {
                                     </motion.button>
 
                                     <motion.button
+                                        type="button"
                                         className="flex-1 flex items-center justify-center space-x-2 bg-white border border-gray-300 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
@@ -297,7 +488,7 @@ const Login = () => {
                                     </motion.button>
                                 </div>
                             </div>
-                        </motion.div>
+                        </motion.form>
 
                         <motion.p
                             className="text-center text-xs text-gray-500 mt-6"
@@ -317,6 +508,80 @@ const Login = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Forgot Password Modal */}
+            {showForgotPassword && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <motion.div 
+                        className="bg-white rounded-lg max-w-md w-full p-6 relative"
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <button 
+                            type="button" 
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                            onClick={() => setShowForgotPassword(false)}
+                        >
+                            <X className="h-6 w-6" />
+                        </button>
+                        
+                        <h3 className="text-xl font-bold mb-4">Reset Your Password</h3>
+                        <p className="text-gray-600 mb-6">
+                            Enter your email address and we'll send you instructions to reset your password.
+                        </p>
+                        
+                        <form onSubmit={handleForgotPassword}>
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Email Address
+                                </label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Mail className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        type="email"
+                                        className="bg-white pl-10 pr-4 py-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
+                                        placeholder="Enter your email"
+                                        value={forgotPasswordEmail}
+                                        onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="flex space-x-3">
+                                <button
+                                    type="button"
+                                    className="flex-1 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                                    onClick={() => setShowForgotPassword(false)}
+                                >
+                                    Cancel
+                                </button>
+                                
+                                <motion.button
+                                    type="submit"
+                                    className="flex-1 bg-brand-blue text-white py-3 rounded-lg font-medium shadow-md hover:shadow-lg hover:bg-brand-blue-dark transition-all"
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    disabled={forgotPasswordLoading}
+                                >
+                                    {forgotPasswordLoading ? (
+                                        <span className="flex items-center justify-center">
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Sending...
+                                        </span>
+                                    ) : 'Reset Password'}
+                                </motion.button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </div>
+            )}
         </PageTransition>
     );
 };

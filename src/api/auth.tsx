@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_URL = 'https://shopmeai-backend.onrender.com/api/auth';
 
 // Handle API responses with error codes
-const handleApiError = (error: any) => {
+const handleApiError = (error) => {
     if (error.response) {
         // Server responded with a status code outside 2xx
         const { status, data } = error.response;
@@ -33,24 +33,38 @@ const handleApiError = (error: any) => {
 };
 
 // Register User
-export const register = async (userData: any) => {
+export const register = async (userData) => {
+    console.log(userData);
     try {
         const response = await axios.post(`${API_URL}/register`, userData);
-        return response.data;
+        console.log(response.data);
+        return { ...response.data, success: true };
     } catch (error) {
-        handleApiError(error);
+        console.log(error);
+        throw handleApiError(error);
     }
 };
 
 // Login User
-export const login = async (credentials: { email: string; password: string }) => {
+export const login = async (credentials) => {
     try {
         const response = await axios.post(`${API_URL}/login`, credentials);
         const { token, user } = response.data;
-        console.log(user);
+        
         localStorage.setItem('authToken', token);
         localStorage.setItem('user', JSON.stringify(user));
+        
         return { token, user, success: true };
+    } catch (error) {
+        throw handleApiError(error);
+    }
+};
+
+// Forgot Password
+export const forgotPassword = async (email) => {
+    try {
+        const response = await axios.post(`${API_URL}/forgot-password`, email);
+        return { ...response.data, success: true };
     } catch (error) {
         throw handleApiError(error);
     }
@@ -58,11 +72,21 @@ export const login = async (credentials: { email: string; password: string }) =>
 
 // Logout User
 export const logout = () => {
-    localStorage.removeItem('token'); // Remove token from local storage
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
 };
 
 // Check if user is authenticated
 export const isAuthenticated = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     return token !== null;
+};
+
+// Get current user data
+export const getCurrentUser = () => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+        return JSON.parse(userStr);
+    }
+    return null;
 };

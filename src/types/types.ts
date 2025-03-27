@@ -2,13 +2,17 @@ export interface Child {
     _id: string;
     name: string;
     email?: string;  
-    avatar: string;
+    avatar?: string;
     age?: number;
     balance: number;
     spendingLimit: number;
     active: boolean;
     password?: string;
-    notifications: Notification[];
+    notifications?: Notification[];
+    notificationsEnabled?: boolean;
+    parentApprovalRequired?: boolean;
+    restrictedMerchants?: string[];
+    scheduledAllowance?: number;
 }
 
 export interface Activity {
@@ -52,3 +56,11 @@ export interface CharacterVariants {
     talking: any;
     listening: any;
 }
+
+export interface User {
+    id: string;
+    email: string;
+    name: string;
+    role: "parent" | "child";
+    // Add any other user properties you need
+  }

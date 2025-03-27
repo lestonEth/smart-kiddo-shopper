@@ -8,7 +8,7 @@ import ActivityTable from '@/components/dashboard/ActivityTable';
 import ChildAccounts from '@/components/dashboard/ChildAccounts';
 import QuickActions from '@/components/dashboard/QuickActions';
 import AddChildForm from '@/components/dashboard/AddChildForm';
-import { registerChild } from '@/api/child_api';
+import { register } from '@/api/auth';
 import { getChildren, deleteChild } from '@/api/parent_api';
 import { Child, Activity, FormData } from '@/types/types';
 import { useToast, toast } from '@/hooks/use-toast';
@@ -44,9 +44,6 @@ const recentActivities: Activity[] = [
     },
 ];
 
-// Sample parent ID for the current logged-in parent
-const PARENT_ID = "parent_123456";
-
 const Dashboard: React.FC = () => {
     const [children, setChildren] = useState<Child[]>(initialChildren);
     const [activities] = useState<Activity[]>(recentActivities);
@@ -54,18 +51,23 @@ const Dashboard: React.FC = () => {
     const [showAddChildForm, setShowAddChildForm] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-
+    
     const totalBalance = children.reduce((sum, child) => sum + child.balance, 0);
     const activeChildrenCount = children.filter(c => c.active).length;
     const purchasesThisMonth = 7; // Hardcoded value from original component
+    const [parentId, setParentId] = useState(null);
 
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) setParentId(user.id);
+    }, []);
+    
     useEffect(() => {
         // Fetch children data from the API
         const fetchChildren = async () => {
             try {
                 const response = await getChildren();
                 if (response && response.children) {
-                    console.log(response.children);
                     setChildren(response.children);
                 }
             } catch (err: any) {
@@ -99,11 +101,13 @@ const Dashboard: React.FC = () => {
                 email: formData.email,
                 password: formData.password,
                 age: Number(formData.age),
-                spending_limit: Number(formData.spending_limit)
+                parent_id: parentId,
+                role: 'child',
+                spendingLimit: Number(formData.spending_limit)
             };
             
             // Call the API to register the child
-            const response = await registerChild(childApiData);
+            const response = await register(childApiData);
             // // If successful, create a new child object with data from the response
             if (response && response.child._id) {
                 // Create avatar from first letter of name
@@ -111,7 +115,7 @@ const Dashboard: React.FC = () => {
                 
                 // Create a new child object
                 const newChild: Child = {
-                    id: response._id, // Use the ID from the API response
+                    _id: response._id, // Use the ID from the API response
                     name: formData.name,
                     avatar: avatar,
                     balance: 0, // Start with zero balance
@@ -210,7 +214,7 @@ const Dashboard: React.FC = () => {
                                 <AddChildForm
                                     onSubmit={handleSubmitAddChild}
                                     onCancel={handleCancelAddChild}
-                                    parentId={PARENT_ID}
+                                    parentId={parentId}
                                     isSubmitting={isSubmitting}
                                 />
                             ) : (

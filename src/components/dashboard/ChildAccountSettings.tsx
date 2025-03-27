@@ -95,7 +95,7 @@ const ChildAccountSettings: React.FC<ChildAccountSettingsProps> = ({
         setSettings(prev => ({
             ...prev,
             scheduledAllowance: {
-                ...prev.scheduledAllowance,
+                ...prev.scheduledAllowance || {},
                 [name]: checked !== null ? checked :
                     type === 'number' ? parseFloat(value) || 0 : value
             }
@@ -140,7 +140,7 @@ const ChildAccountSettings: React.FC<ChildAccountSettingsProps> = ({
             newErrors.dailySpendingLimit = 'Spending limit cannot be negative';
         }
 
-        if (settings.scheduledAllowance.enabled && settings.scheduledAllowance.amount <= 0) {
+        if (typeof settings.scheduledAllowance === 'object' && settings.scheduledAllowance.enabled && settings.scheduledAllowance.amount <= 0) {
             newErrors.allowanceAmount = 'Allowance amount must be greater than zero';
         }
 
@@ -174,10 +174,10 @@ const ChildAccountSettings: React.FC<ChildAccountSettingsProps> = ({
     };
 
     const getDayLabel = () => {
-        if (settings.scheduledAllowance.frequency === 'weekly') {
+        if (typeof settings.scheduledAllowance === 'object' && settings.scheduledAllowance.frequency === 'weekly') {
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             return `Day of week: ${days[settings.scheduledAllowance.dayOfWeek]}`;
-        } else if (settings.scheduledAllowance.frequency === 'monthly') {
+        } else if (typeof settings.scheduledAllowance === 'object' && settings.scheduledAllowance.frequency === 'monthly') {
             return `Day of month: ${settings.scheduledAllowance.dayOfMonth}`;
         }
         return '';
@@ -273,7 +273,7 @@ const ChildAccountSettings: React.FC<ChildAccountSettingsProps> = ({
                                         type="checkbox"
                                         id="allowanceEnabled"
                                         name="enabled"
-                                        checked={settings.scheduledAllowance.enabled}
+                                        checked={typeof settings.scheduledAllowance === 'object' && settings.scheduledAllowance?.enabled}
                                         onChange={handleAllowanceChange}
                                         className="h-4 w-4 text-brand-blue focus:ring-brand-blue rounded"
                                     />
@@ -282,7 +282,7 @@ const ChildAccountSettings: React.FC<ChildAccountSettingsProps> = ({
                                     </label>
                                 </div>
 
-                                {settings.scheduledAllowance.enabled && (
+                                {typeof settings.scheduledAllowance === 'object' && settings.scheduledAllowance.enabled && (
                                     <div className="pl-6 space-y-4 border-l-2 border-gray-100">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">
