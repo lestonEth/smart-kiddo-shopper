@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://shopmeai-backend.onrender.com/api/auth';
+const API_URL = 'http://127.0.0.1:5000/api/auth';
 
 // Handle API responses with error codes
 const handleApiError = (error) => {
@@ -36,7 +36,7 @@ const handleApiError = (error) => {
 export const register = async (userData) => {
     console.log(userData);
     try {
-        const response = await axios.post(`${API_URL}/register`, userData);
+        const response = await axios.post(`${ API_URL }/register`, userData);
         console.log(response.data);
         return { ...response.data, success: true };
     } catch (error) {
@@ -45,15 +45,28 @@ export const register = async (userData) => {
     }
 };
 
+export const createChild = async (childData) => {
+    try {
+        const response = await axios.post(`${ API_URL }/create-child`, childData, {
+            headers: {
+                Authorization: `Bearer ${ localStorage.getItem('authToken') }`
+            }
+        });
+        return { ...response.data, success: true };
+    } catch (error) {
+        throw handleApiError(error);
+    }
+}
+
 // Login User
 export const login = async (credentials) => {
     try {
-        const response = await axios.post(`${API_URL}/login`, credentials);
+        const response = await axios.post(`${ API_URL }/login`, credentials);
         const { token, user } = response.data;
-        
+
         localStorage.setItem('authToken', token);
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         return { token, user, success: true };
     } catch (error) {
         throw handleApiError(error);
@@ -63,7 +76,7 @@ export const login = async (credentials) => {
 // Forgot Password
 export const forgotPassword = async (email) => {
     try {
-        const response = await axios.post(`${API_URL}/forgot-password`, email);
+        const response = await axios.post(`${ API_URL }/forgot-password`, email);
         return { ...response.data, success: true };
     } catch (error) {
         throw handleApiError(error);

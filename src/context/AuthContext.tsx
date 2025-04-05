@@ -1,103 +1,97 @@
-import { createContext, useState, useEffect, ReactNode } from "react";
-import { User } from "@/types/types";
+"use client"
+
+import { createContext, useState, useEffect, type ReactNode } from "react"
+import type { User } from "@/types/types"
+import { login as apiLogin, logout as apiLogout, getCurrentUser } from "@/api/auth"
 
 // Define the shape of our context
 interface AuthContextType {
-    user: User | null;
-    isAuthenticated: boolean;
-    login: (email: string, password: string) => Promise<boolean>;
-    logout: () => void;
-    loading: boolean;
+    user: User | null
+    isAuthenticated: boolean
+    login: (email: string, password: string) => Promise<{ success: boolean; user: User | null }>
+    logout: () => void
+    loading: boolean
 }
 
 // Create the context with a default value
 const AuthContext = createContext<AuthContextType>({
     user: null,
     isAuthenticated: false,
-    login: async () => false,
+    login: async () => ({ success: false, user: null }),
     logout: () => { },
-    loading: true
-});
+    loading: true,
+})
 
 interface AuthProviderProps {
-    children: ReactNode;
+    children: ReactNode
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<User | null>(null)
+    const [loading, setLoading] = useState(true)
 
     // Check for existing session on mount
     useEffect(() => {
         const checkAuthStatus = async () => {
             try {
-                // Try to load user data from localStorage or session storage
-                const savedUser = localStorage.getItem("user");
-
-                if (savedUser) {
-                    setUser(JSON.parse(savedUser));
+                // Load user data from localStorage
+                const currentUser = getCurrentUser()
+                if (currentUser) {
+                    setUser(currentUser)
                 }
             } catch (error) {
-                console.error("Authentication check failed:", error);
+                console.error("Authentication check failed:", error)
+                // Clear potentially corrupted auth data
+                localStorage.removeItem("user")
+                localStorage.removeItem("authToken")
             } finally {
-                setLoading(false);
+                setLoading(false)
             }
-        };
-
-        checkAuthStatus();
-    }, []);
-
-    const login = async (email: string, password: string): Promise<boolean> => {
-        setLoading(true);
-        try {
-            // Here you would normally make an API call to your authentication endpoint
-            // For example:
-            // const response = await fetch("/api/login", {
-            //   method: "POST",
-            //   headers: { "Content-Type": "application/json" },
-            //   body: JSON.stringify({ email, password })
-            // });
-            // const data = await response.json();
-
-            // For demonstration purposes, we'll simulate a successful login
-            // Replace this with your actual authentication logic
-            const mockUser: User = {
-                id: "user123",
-                email,
-                name: email.split("@")[0],
-                role: email.includes("parent") ? "parent" : "child",
-            };
-
-            // Save user to state and localStorage
-            setUser(mockUser);
-            localStorage.setItem("user", JSON.stringify(mockUser));
-
-            setLoading(false);
-            return true;
-        } catch (error) {
-            console.error("Login failed:", error);
-            setLoading(false);
-            return false;
         }
-    };
+
+        checkAuthStatus()
+    }, [])
+
+    const login = async (email: string, password: string): Promise<{ success: boolean; user: User | null }> => {
+        setLoading(true)
+        try {
+            // Use the API login function which handles localStorage
+            const response = await apiLogin({ email, password })
+
+            if (response && response.success) {
+                // Set user in context state
+                setUser(response.user)
+                setLoading(false)
+                return { success: true, user: response.user }
+            } else {
+                setLoading(false)
+                return { success: false, user: null }
+            }
+        } catch (error) {
+            console.error("Login failed:", error)
+            setLoading(false)
+            return { success: false, user: null }
+        }
+    }
 
     const logout = () => {
-        // Clear user from state and localStorage
-        setUser(null);
-        localStorage.removeItem("user");
-    };
+        // Use the API logout function which handles localStorage
+        apiLogout()
+        setUser(null)
+    }
 
-    const isAuthenticated = !!user;
+    const isAuthenticated = !!user
 
     const value = {
         user,
         isAuthenticated,
         login,
         logout,
-        loading
-    };
+        loading,
+    }
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}
 
-export default AuthContext;
+export default AuthContext
+

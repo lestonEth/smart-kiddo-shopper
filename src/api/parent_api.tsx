@@ -1,16 +1,17 @@
 import axios from 'axios';
 import { handleApiError } from '.';
 
-const API_URL = 'https://shopmeai-backend.onrender.com/api/users';
+
+const API_URL = `http://127.0.0.1:5000/api/users`;
 
 
 // get all children of the parent
 export const getChildren = async () => {
     try {
-        const response = await axios.get(`${API_URL}/children`, {
+        const response = await axios.get(`${ API_URL }/children`, {
             headers: {
                 Accept: 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                Authorization: `Bearer ${ localStorage.getItem('authToken') }`
             }
         });
         return response.data;
@@ -23,9 +24,9 @@ export const getChildren = async () => {
 // delete a child
 export const deleteChild = async (childId: string) => {
     try {
-        const response = await axios.delete(`${API_URL}/child/${childId}`, {
+        const response = await axios.delete(`${ API_URL }/child/${ childId }`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                Authorization: `Bearer ${ localStorage.getItem('authToken') }`
             }
         });
         return response.data;
