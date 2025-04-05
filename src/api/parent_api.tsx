@@ -2,7 +2,7 @@ import axios from 'axios';
 import { handleApiError } from '.';
 
 
-const API_URL = `http://127.0.0.1:5000/api/users`;
+const API_URL = `https://distinct-useful-lark.ngrok-free.app/api/users`;
 
 
 // get all children of the parent
