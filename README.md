@@ -1,69 +1,134 @@
-# Welcome to your Lovable project
+Amazon Purchase System for Children (Voice Command-based)
+Overview
+This system enables children to make purchases from Amazon using voice commands through an AI-powered chatbot named "KOTANA". The system allows parents to create child accounts, assign a specific budget, and let children interact with the bot to purchase items from Amazon. It ensures that purchases are within the assigned budget and provides a safe and fun shopping experience for kids.
 
-## Project info
+Features:
+Parent Account Creation: Parents can create accounts for their children and assign a budget.
 
-**URL**: https://lovable.dev/projects/90933f7d-9914-43ce-95c2-9f3113315cd5
+Voice Command Shopping: Children can interact with the AI chatbot "KOTANA" through voice commands to search and purchase items from Amazon.
 
-## How can I edit this code?
+Budget Control: Parents can set and track the spending budget for each child to ensure safe spending.
 
-There are several ways of editing your application.
+AI Integration: KOTANA, the AI assistant, is powered by machine learning models to handle natural language processing and guide children through the purchase process.
 
-**Use Lovable**
+Item Purchase Confirmation: Once an item is selected, the system asks for parental confirmation before proceeding with the purchase.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/90933f7d-9914-43ce-95c2-9f3113315cd5) and start prompting.
+Getting Started
+Prerequisites:
+Node.js and npm (or yarn)
 
-Changes made via Lovable will be committed automatically to this repo.
+Amazon API credentials (for integration with Amazon purchasing)
 
-**Use your preferred IDE**
+Cloud service for hosting (AWS, Google Cloud, etc.)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Speech-to-text API (e.g., Google Speech, Microsoft Azure)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Voice synthesis for chatbot responses (e.g., Google Text-to-Speech, Amazon Polly)
 
-Follow these steps:
+AI integration (KOTANA) setup (using tools like TensorFlow, OpenAI GPT, or similar)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Installation
+Clone the repository:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+bash
+Copy
+Edit
+git clone https://github.com/yourusername/amazon-voice-purchase-system.git
+cd amazon-voice-purchase-system
+Install dependencies:
 
-# Step 3: Install the necessary dependencies.
-npm i
+bash
+Copy
+Edit
+npm install
+Set up the environment variables: Create a .env file and add the following configuration:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+ini
+Copy
+Edit
+AMAZON_API_KEY=your_amazon_api_key
+PARENT_ACCOUNT_DB=your_database_url
+CHILD_ACCOUNT_DB=your_database_url
+SPEECH_TO_TEXT_API_KEY=your_speech_to_text_api_key
+TEXT_TO_SPEECH_API_KEY=your_text_to_speech_api_key
+KOTANA_AI_API_KEY=your_kotana_ai_api_key
+Run the server:
 
-**Edit a file directly in GitHub**
+bash
+Copy
+Edit
+npm start
+Usage
+Parent Side:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Parents can log in to the system and create child accounts.
 
-**Use GitHub Codespaces**
+They assign a spending budget for each child.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Parents receive notifications about any attempted purchases and can approve or deny them.
 
-## What technologies are used for this project?
+Child Side:
 
-This project is built with .
+Children can talk to KOTANA via voice commands to search for products.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+KOTANA will respond with product suggestions, which children can select.
 
-## How can I deploy this project?
+Once the selection is made, the parent will receive a prompt to approve the purchase.
 
-Simply open [Lovable](https://lovable.dev/projects/90933f7d-9914-43ce-95c2-9f3113315cd5) and click on Share -> Publish.
+Example Flow:
+Child says: "Hey KOTANA, find me a toy car."
 
-## I want to use a custom domain - is that possible?
+KOTANA responds with a list of toy cars and their prices.
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+Child selects one by saying: "Buy this one."
+
+KOTANA asks for confirmation: "This toy car costs $15. Do you want to proceed?"
+
+The parent receives a notification to approve or deny the purchase.
+
+Testing
+To test the system:
+
+Ensure the environment variables are set up correctly.
+
+Use the following command to simulate voice commands:
+
+bash
+Copy
+Edit
+npm run test:voice-command
+Technologies Used
+Node.js: Backend server to handle the requests and process data.
+
+Amazon Product Advertising API: Integration for fetching product details from Amazon.
+
+Microsoft Azure / Google Speech: For converting voice commands into text.
+
+KOTANA AI: The AI assistant that helps with product recommendations and understanding voice commands.
+
+MongoDB: To store parent and child account data.
+
+Express.js: Web framework for handling API routes.
+
+Future Features:
+Gift Recommendations: Personalized gift suggestions based on the child’s interests.
+
+Parental Approval History: Track and review purchases made by the child.
+
+Voice Payment Authentication: Use voice recognition for secure purchase confirmation.
+
+Contributing
+Fork the repository.
+
+Create a new branch: git checkout -b feature/your-feature.
+
+Make your changes.
+
+Commit your changes: git commit -m 'Add new feature'.
+
+Push to the branch: git push origin feature/your-feature.
+
+Submit a pull request.
+
+License
+This project is licensed under the MIT License - see the LICENSE file for details.
