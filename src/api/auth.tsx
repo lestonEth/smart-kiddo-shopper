@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://distinct-useful-lark.ngrok-free.app/api/auth';
+const API_URL = 'https://shopmeai-backend.onrender.com/api/auth';
 
 // Handle API responses with error codes
 const handleApiError = (error) => {
