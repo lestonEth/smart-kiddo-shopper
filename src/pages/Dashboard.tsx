@@ -8,7 +8,7 @@ import ActivityTable from '@/components/dashboard/ActivityTable';
 import ChildAccounts from '@/components/dashboard/ChildAccounts';
 import QuickActions from '@/components/dashboard/QuickActions';
 import AddChildForm from '@/components/dashboard/AddChildForm';
-import { register } from '@/api/auth';
+import { createChild } from '@/api/auth';
 import { getChildren, deleteChild } from '@/api/parent_api';
 import { Child, Activity, FormData } from '@/types/types';
 import { useToast, toast } from '@/hooks/use-toast';
@@ -51,7 +51,7 @@ const Dashboard: React.FC = () => {
     const [showAddChildForm, setShowAddChildForm] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    
+
     const totalBalance = children.reduce((sum, child) => sum + child.balance, 0);
     const activeChildrenCount = children.filter(c => c.active).length;
     const purchasesThisMonth = 7; // Hardcoded value from original component
@@ -61,7 +61,7 @@ const Dashboard: React.FC = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user) setParentId(user.id);
     }, []);
-    
+
     useEffect(() => {
         // Fetch children data from the API
         const fetchChildren = async () => {
@@ -71,7 +71,7 @@ const Dashboard: React.FC = () => {
                     setChildren(response.children);
                 }
             } catch (err: any) {
-                toast( {title: 'Error', description: err?.message || "Failed to fetch children data"});
+                toast({ title: 'Error', description: err?.message || "Failed to fetch children data" });
                 setError(err?.message || "Failed to fetch children data");
             }
         };
@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
         try {
             setIsSubmitting(true);
             setError(null);
-            
+
             // Prepare data for API
             const childApiData = {
                 name: formData.name,
@@ -105,14 +105,15 @@ const Dashboard: React.FC = () => {
                 role: 'child',
                 spendingLimit: Number(formData.spending_limit)
             };
-            
+
             // Call the API to register the child
-            const response = await register(childApiData);
+            const response = await createChild(childApiData);
+            console.log(response);
             // // If successful, create a new child object with data from the response
             if (response && response.child._id) {
                 // Create avatar from first letter of name
                 const avatar = formData.name.charAt(0).toUpperCase();
-                
+
                 // Create a new child object
                 const newChild: Child = {
                     _id: response._id, // Use the ID from the API response
@@ -131,12 +132,12 @@ const Dashboard: React.FC = () => {
 
                 // Select the newly added child
                 setSelectedChild(response._id);
-                toast( {title: 'Success', description: 'Child account registered successfully'});
+                toast({ title: 'Success', description: 'Child account registered successfully' });
             } else {
                 throw new Error("Failed to register child account");
             }
         } catch (err: any) {
-            toast( {title: 'Error', description: err?.message || "Failed to register child account"});
+            toast({ title: 'Error', description: err?.message || "Failed to register child account" });
             setError(err?.message || "Failed to register child account");
         } finally {
             setIsSubmitting(false);
@@ -169,14 +170,14 @@ const Dashboard: React.FC = () => {
         try {
             // Call the API to delete the child account
             deleteChild(childId);
-            
+
             // Remove the child from the list
             setChildren(children.filter(child => child._id !== childId));
             setSelectedChild(null);
-            toast( {title: 'Success', description: 'Child account terminated successfully'});
+            toast({ title: 'Success', description: 'Child account terminated successfully' });
         }
         catch (err: any) {
-            toast( {title: 'Error', description: err?.message || "Failed to terminate child account"});
+            toast({ title: 'Error', description: err?.message || "Failed to terminate child account" });
             setError(err?.message || "Failed to terminate child account");
         }
     };

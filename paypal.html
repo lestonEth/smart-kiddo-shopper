@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPal: Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+        }
+
+        /* Header styles */
+        .header {
+            background-color: #2626a8;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            height: 72px;
+            color: white;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .logo {
+            margin-right: 20px;
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            font-weight: 400;
+            border-radius: 24px;
+            margin: 0 4px;
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .icon-btn {
+            color: white;
+            font-size: 20px;
+            margin-left: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            color: white;
+            background: none;
+            border: none;
+            margin-left: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Main content styles */
+        .main-container {
+            display: flex;
+            padding: 20px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .content-left {
+            flex: 2;
+            margin-right: 20px;
+        }
+
+        .content-right {
+            flex: 1;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .link-card {
+            display: flex;
+            align-items: center;
+        }
+
+        .card-icon {
+            color: #0070e0;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .card-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .card-content p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .balance-card {
+            position: relative;
+        }
+
+        .balance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .balance-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .more-options {
+            color: #666;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 5px;
+        }
+
+        .balance-amount {
+            font-size: 36px;
+            color: #000;
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+
+        .balance-status {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .transfer-btn {
+            background-color: #1a1f71;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+            margin: 20px 0 10px;
+        }
+
+        /* Transaction styles */
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #1a1f71;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+        }
+
+        .transaction-details h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .transaction-details p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        .transaction-note {
+            font-size: 14px;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .transaction-amount {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .negative {
+            color: #000;
+        }
+
+        .positive {
+            color: #00a65a;
+        }
+
+        /* Right column styles */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+
+        .send-btn {
+            background-color: #1a1f71;
+            color: white;
+        }
+
+        .request-btn {
+            background-color: #1a1f71;
+            color: white;
+        }
+
+        .quick-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .quick-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .quick-action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #f5f7fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-size: 20px;
+            color: #1a1f71;
+        }
+
+        .quick-action-text {
+            font-size: 14px;
+            max-width: 80px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .section-title-small {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .search-action {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #f5f7fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 20px;
+            color: #1a1f71;
+        }
+
+        .search-text {
+            font-size: 14px;
+        }
+
+        .bank-item {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .bank-icon {
+            width: 40px;
+            height: 30px;
+            background-color: #1a1f71;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .bank-info {
+            font-size: 14px;
+        }
+
+        .bank-name {
+            font-weight: 500;
+        }
+
+        .bank-details {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .show-all {
+            color: #0070e0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header navigation -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="ri-paypal-fill"></i>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link active">Home</a>
+                <a href="#" class="nav-link">Send and Request</a>
+                <a href="#" class="nav-link">Wallet</a>
+                <a href="#" class="nav-link">Activity</a>
+                <a href="#" class="nav-link">Help</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <button class="icon-btn">
+                <i class="ri-notification-3-line"></i>
+            </button>
+            <button class="icon-btn">
+                <i class="ri-settings-3-line"></i>
+            </button>
+            <button class="logout-btn">LOG OUT</button>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <div class="main-container">
+        <!-- Left content column -->
+        <div class="content-left">
+            <!-- Link a card section -->
+            <div class="card link-card">
+                <div class="card-icon">
+                    <i class="ri-bank-card-fill"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Link a card</h3>
+                    <p>Send payments in minutes.</p>
+                </div>
+            </div>
+
+            <!-- Balance card -->
+            <div class="card balance-card">
+                <div class="balance-header">
+                    <div class="balance-title">PayPal balance</div>
+                    <button class="more-options">
+                        <i class="ri-more-2-fill"></i>
+                    </button>
+                </div>
+                <div class="balance-amount">US$0.00</div>
+                <div class="balance-status">Available</div>
+                <button class="transfer-btn">Transfer Funds</button>
+            </div>
+
+            <!-- Recent activity section -->
+            <div class="section-title">Recent activity</div>
+            <div class="card" style="padding: 0;">
+                <div class="transaction-item">
+                    <div class="transaction-left">
+                        <div class="transaction-icon">
+                            <i class="ri-store-2-line"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <h4>THUNES</h4>
+                            <p>28 Mar · Payment</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount negative">−$500.00</div>
+                </div>
+                <div class="transaction-item">
+                    <div class="transaction-left">
+                        <div class="transaction-icon">
+                            <i class="ri-store-2-line"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <h4>Tawaseel</h4>
+                            <p>28 Mar · Money Received</p>
+                            <div class="transaction-note">"Call center project"</div>
+                        </div>
+                    </div>
+                    <div class="transaction-amount positive">+$500.00</div>
+                </div>
+            </div>
+            <a href="#" class="show-all">Show all</a>
+        </div>
+
+        <!-- Right content column -->
+        <div class="content-right card">
+            <!-- Action buttons -->
+            <div class="action-buttons">
+                <button class="action-btn send-btn">Send</button>
+                <button class="action-btn request-btn">Request</button>
+            </div>
+
+            <!-- Quick actions -->
+            <div class="quick-actions">
+                <div class="quick-action">
+                    <div class="quick-action-icon">
+                        <i class="ri-bank-card-line"></i>
+                    </div>
+                    <div class="quick-action-text">Add card or bank</div>
+                </div>
+                <div class="quick-action">
+                    <div class="quick-action-icon">
+                        <i class="ri-file-list-3-line"></i>
+                    </div>
+                    <div class="quick-action-text">Create an invoice</div>
+                </div>
+                <div class="quick-action">
+                    <div class="quick-action-icon">
+                        <i class="ri-more-2-line"></i>
+                    </div>
+                    <div class="quick-action-text">More</div>
+                </div>
+            </div>
+
+            <!-- Send again section -->
+            <div class="section-header">
+                <div class="section-title-small">Send again</div>
+                <button class="more-options">
+                    <i class="ri-more-2-fill"></i>
+                </button>
+            </div>
+
+            <div class="search-action">
+                <div class="search-icon">
+                    <i class="ri-search-line"></i>
+                </div>
+                <div class="search-text">Search</div>
+            </div>
+
+            <!-- Banks and cards section -->
+            <div class="section-header">
+                <div class="section-title-small">Banks and cards</div>
+                <button class="more-options">
+                    <i class="ri-more-2-fill"></i>
+                </button>
+            </div>
+
+            <div class="bank-item">
+                <div class="bank-icon"></div>
+                <div class="bank-info">
+                    <div class="bank-name">Your Bank</div>
+                    <div class="bank-details">Prepaid ••••32</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
